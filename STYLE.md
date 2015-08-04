@@ -19,7 +19,7 @@ Whitespace
 * Always use Unix-style line endings. Git enforces this.
 * Delete all trailing whitespace before committing.
 * Never go over 80 characters of width in a file.
-* Try to horizontally align things to achieve visual coherence,
+* Try to horizontally align things to achieve visual coherence.
     * However, do not ever indent lines such that one cannot
       just select the whole file in Emacs and reindent.
 
@@ -37,8 +37,8 @@ Syntax
 
 * Generally, whenever you have something that semantically
   represents a binding of some kind, you should use the same
-  style -- with square brackets nested inside parentheses --
-  as the `let` example above.
+  style — square brackets nested inside parentheses — as the
+  `let` example above.
 
 
 Naming
