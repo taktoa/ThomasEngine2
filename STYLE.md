@@ -1,19 +1,15 @@
-ThomasEngine2 Style Guide
-=========================
+# ThomasEngine2 Style Guide
 
 This is the style guide for code written in ThomasEngine2.
 
-Style Guidelines
-================
+# Style Guidelines
 
-General
--------
+## General
 
 * Every file should begin (roughly) with the template shown
-  in Appendix 1.
+  in [Appendix 1][ax-1].
 
-Whitespace
-----------
+## Whitespace
 
 * Always use spaces for indentation.
 * Always use Unix-style line endings. Git enforces this.
@@ -23,8 +19,7 @@ Whitespace
     * However, do not ever indent lines such that one cannot
       just select the whole file in Emacs and reindent.
 
-Syntax
-------
+## Syntax
 
 * Bindings in `let`-style expressions should look like this:
 
@@ -41,8 +36,7 @@ Syntax
   `let` example above.
 
 
-Naming
-------
+## Naming
 
 * The length of a variable/function name should correspond to
   the size of its scope.
@@ -54,8 +48,7 @@ Naming
 * Explicit namespacing is almost always unnecessary, as it can
   easily be accomplished with the Guile module system.
 
-Documentation
--------------
+## Documentation
 
 * All functions and variables should be defined with documention.
     * Use the following macros to add docstrings to definitions:
@@ -68,26 +61,24 @@ Documentation
         * First line is a complete sentence ending in punctuation.
         * Begin with a terse, complete sentence.
             * Use imperative language.
-            * For example, prefer "Return" over "Returns".
+            * For example, prefer "Return" over "Returns",
+              "Determine" over "Determines", etc.
             * The arguments should each appear in the docstring in
               the same order as they appear in the argument list.
         * Do not indent lines in a docstring.
         * Texinfo formatting can be used inside docstrings.
-            * Refer to Appendix 2 for a primer on Texinfo syntax.
+            * Refer to [Appendix 2][ax-2] for a primer on Texinfo syntax.
             * More information on Texinfo is available [here][texinfo].
 
-Tests
------
+## Tests
 
 * Use the [`(unit-test)`][unit-test] library for creating unit tests.
 * We should have 100% coverage if possible.
 
 
-Appendix
-========
+# Appendix
 
-1. Standard File Template
--------------------------
+## 1. Standard File Template
 
 ```scheme
 ;;; File: <FILE-NAME>
@@ -95,40 +86,46 @@ Appendix
 ;;; License:
 ;; Copyright © <YEAR> <COPYRIGHT-HOLDER> <<COPYRIGHT-HOLDER-EMAIL>>
 ;;
-;; This file is part of ThomasEngine2.
+;; This file is part of <PACKAGE>.
 ;;
-;; ThomasEngine2 is free software: you can redistribute it and/or modify
+;; <PACKAGE> is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 ;;
-;; ThomasEngine2 is distributed in the hope that it will be useful,
+;; <PACKAGE> is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with ThomasEngine. If not, see <http://www.gnu.org/licenses/>.
+;; along with <PACKAGE>. If not, see <http://www.gnu.org/licenses/>.
 ;;
 ;;; Author:     <AUTHOR-NAME>     <<AUTHOR-EMAIL>>
 ;;; Maintainer: <MAINTAINER-NAME> <<MAINTAINER-EMAIL>>
 ;;; Created:    <DATE-CREATED>
 ;;
-;;; Homepage:   https://github.com/taktoa/ThomasEngine2
+;;; Homepage:   <WEBSITE>
 ;;
 ;;; Commentary:
 ;; <LIBRARY-DESCRIPTION>
 ;;
 ;;; Code:
 
-(define-module (thomas <LIBRARY-NAME>)
+(define-module (<PACKAGE-MODULE> <LIBRARY-NAME>)
   #:use-module (scheme documentation)
   ;; ... extra imports etc. go here ...
   #:export     ())
 ```
 
-2. Texinfo Reference
---------------------
+| Variable           | Value                                   |
+| ------------------ | --------------------------------------- |
+| `<WEBSITE>`        | https://github.com/taktoa/ThomasEngine2 |
+| `<PACKAGE>`        | ThomasEngine2                           |
+| `<PACKAGE-MODULE>` | `thomas`                                |
+
+
+## 2. Texinfo Reference
 
 | Texinfo                | Meaning                      | Short Example        |
 | ---------------------- |:---------------------------- | -------------------- |
@@ -155,7 +152,10 @@ Appendix
 
 --------------------------------------------------------------------------------
 
+[ax-1]: #standard-file-template
+[ax-2]: #texinfo-reference
 
 [texinfo]:    http://www.gnu.org/software/texinfo/manual/texinfo/texinfo.html
 [unit-test]:  http://www.nongnu.org/guile-lib/doc/ref/unit-test
 [docstrings]: http://www.nongnu.org/guile-lib/doc/ref/scheme.documentation
+
