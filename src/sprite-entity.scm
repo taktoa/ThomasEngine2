@@ -31,6 +31,7 @@
 
 (define-module (thomas sprite-entity)
   #:use-module (scheme documentation)
+  #:use-module (ice-9  hash-table)
   #:use-module (thomas entity)
   #:export     (make-sprite-entity
                 <sprite-entity>))

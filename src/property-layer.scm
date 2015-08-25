@@ -31,6 +31,7 @@
 
 (define-module (thomas property-layer)
   #:use-module (scheme documentation)
+  #:use-module (ice-9  hash-table)
   #:use-module (thomas utility)
   #:export     (<property-layer>))
 

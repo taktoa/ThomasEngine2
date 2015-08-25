@@ -31,6 +31,7 @@
 
 (define-module (thomas entity)
   #:use-module (scheme documentation)
+  #:use-module (ice-9  hash-table)
   #:export     (make-entity
                 <entity>))
 

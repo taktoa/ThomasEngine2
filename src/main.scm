@@ -31,6 +31,7 @@
 
 (define-module (thomas main)
   #:use-module (scheme documentation)
+  #:use-module (ice-9  hash-table)
   #:use-module (thomas texture)
   #:use-module (thomas event)
   #:use-module (thomas utility)

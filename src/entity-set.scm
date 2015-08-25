@@ -33,6 +33,7 @@
   #:use-module (scheme documentation)
   #:use-module (ice-9  q)
   #:use-module (ice-9  match)
+  #:use-module (ice-9  hash-table)
   #:use-module (thomas entity)
   #:export     (<entity-set>))
 
