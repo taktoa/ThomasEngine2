@@ -23,12 +23,12 @@ This is the style guide for code written in ThomasEngine2.
 
 * Bindings in `let`-style expressions should look like this:
 
-    ```
-    (let ([x 5]
-          [y 3]
-          [z 4])
-      scope)
-    ```
+```scheme
+(let ([x 5]
+      [y 3]
+      [z 4])
+  scope)
+```
 
 * Generally, whenever you have something that semantically
   represents a binding of some kind, you should use the same
