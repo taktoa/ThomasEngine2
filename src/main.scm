@@ -71,8 +71,8 @@
 
 ;; Hash table for property layer functions
 (define property-hash
-  (hash "black" 'collision
-        "white" 'nothing))
+  (mkhash "black" 'collision
+          "white" 'nothing))
 
 ;; Up, down, left, and right keys
 (define up-key    #\w)
@@ -80,7 +80,7 @@
 (define left-key  #\a)
 (define right-key #\d)
 (define misc-key-hash
-  (hash #\q exit))
+  (mkhash #\q exit))
 
 ;;; ---------------------------- Utility functions -----------------------------
 

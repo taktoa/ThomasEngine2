@@ -69,7 +69,8 @@
 
     ;;; Public functions
     (define/public (set-entity-position name x y)
-      (set-entity-properties name (hash 'position-x x 'position-y y)))
+      (set-entity-properties name (mkhash 'position-x x
+                                          'position-y y)))
 
     (define/public (set-entity-rotation name r)
       (set-entity-property name 'rotation r))

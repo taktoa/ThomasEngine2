@@ -78,7 +78,7 @@
 
     ;; Queue up a single entity change
     (define/public (set-entity-property name key value)
-      (set-entity-properties name (hash key value)))
+      (set-entity-properties name (mkhash key value)))
 
     ;; Get all entities
     (define/public (get-entities)

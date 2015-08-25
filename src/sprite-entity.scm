@@ -38,11 +38,11 @@
 
 (define (make-sprite-entity sprite x y r s)
   (define props
-    (hash 'sprite sprite
-          'position-x x
-          'position-y y
-          'rotation r
-          'scale s))
+    (mkhash 'sprite sprite
+            'position-x x
+            'position-y y
+            'rotation r
+            'scale s))
   (new <sprite-entity>
        [properties props]))
 
