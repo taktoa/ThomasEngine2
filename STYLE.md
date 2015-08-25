@@ -75,6 +75,14 @@ This is the style guide for code written in ThomasEngine2.
 * Use the [`(unit-test)`][unit-test] library for creating unit tests.
 * We should have 100% coverage if possible.
 
+## Performance
+
+* Use `define-inlineable` whenever it makes sense to inline a definition.
+    * One particular example is when you want to hide the accessor of an
+    object from callers: you can use an inlined function wrapper.
+* Always precompile regexes with `make-regexp` or the (yet to be defined)
+  `rx` macro from `utility.scm`.
+* Try not to mutate variables unless it is absolutely necessary.
 
 # Appendix
 
