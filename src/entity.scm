@@ -49,7 +49,7 @@
     (define/public prop-update
       (case-lambda
         [(k v)   (prop-update properties k v)]
-        [(p k v) (if (equal? v 'delete)
+        [(p k v) (if (eq? v 'delete)
                      (hash-remove! p k)
                      (hash-set! p k v))]))
 
