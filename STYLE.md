@@ -44,7 +44,7 @@ This is the style guide for code written in ThomasEngine2.
   loop counter variables.
 * A two-letter variable name that ends in `s` should represent
   a sequence structure, i.e.: `xs` could be a list.
-* Classes should end in a `%`.
+* Classes should be surrounded by angle brackets (`<class>`).
 * Explicit namespacing is almost always unnecessary, as it can
   easily be accomplished with the Guile module system.
 
