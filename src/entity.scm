@@ -41,16 +41,16 @@
   (class object%
     ;;; Class fields
     (init-field
-     [properties (hash)])
+     [properties (make-hash-table)])
 
-    ;;; Public functions
+    ;;; Methods
     ;; Change a property
     (define/public prop-update
       (case-lambda
         [(k v)   (prop-update properties k v)]
         [(p k v) (if (equal? v 'delete)
-                     (hash-remove p k)
-                     (hash-set p k v))]))
+                     (hash-remove! p k)
+                     (hash-set! p k v))]))
 
     ;; Change multiple properties at once
     (define/public (modify-props changes)
