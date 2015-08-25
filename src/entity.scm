@@ -31,6 +31,7 @@
 
 (define-module (thomas entity)
   #:use-module (scheme documentation)
+  #:use-module (srfi   srfi-26)
   #:use-module (ice-9  hash-table)
   #:export     (make-entity
                 <entity>))
@@ -55,14 +56,10 @@
 
     ;; Change multiple properties at once
     (define/public (modify-props changes)
-      (define cl (hash->list changes))
-      (define (compose-list list) (apply compose list))
-
-      (define (update-item c)
-        (λ (p) (prop-update p (car c) (cdr c))))
-      (define update
-        (compose-list (map update-item cl)))
-
+      (let ([change-list  (hash->list changes)]
+            [compose-list (cut apply compose <>)]
+            [update-item  (λ [c] (cut prop-update <> (car c) (cdr c)))]
+            [update       (compose-list (map update-item change-list))]))
       (new <entity> [properties (update properties)]))
 
     ;; Get a specific property of the entity
