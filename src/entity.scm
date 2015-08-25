@@ -59,8 +59,8 @@
       (let ([change-list  (hash->list changes)]
             [compose-list (cut apply compose <>)]
             [update-item  (λ [c] (cut prop-update <> (car c) (cdr c)))]
-            [update       (compose-list (map update-item change-list))]))
-      (new <entity> [properties (update properties)]))
+            [update       (compose-list (map update-item change-list))])
+        (new <entity> [properties (update properties)])))
 
     ;; Get a specific property of the entity
     (define/public (prop-get k) (hash-ref properties k))
