@@ -83,6 +83,10 @@ This is the style guide for code written in ThomasEngine2.
 * Always precompile regexes with `make-regexp` or the (yet to be defined)
   `rx` macro from `utility.scm`.
 * Try not to mutate variables unless it is absolutely necessary.
+* Equality predicates:
+    * Use `eq?`    when comparing symbols
+    * Use `eqv?`   when comparing numbers and characters
+    * Use `equal?` when comparing lists/vectors/etc.
 
 # Appendix
 
