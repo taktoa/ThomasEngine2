@@ -40,15 +40,15 @@
   (class <entity-set>
     ;;; Class fields
     (inherit
-      add-entity
-      rem-entity
-      set-entity-properties
-      set-entity-property
-      get-entity
-      get-entities
-      get-entity-properties
-      get-entity-property
-      update!)
+     add-entity
+     rem-entity
+     set-entity-properties
+     set-entity-property
+     get-entity
+     get-entities
+     get-entity-properties
+     get-entity-property
+     update!)
 
     (inherit-field
      entity-hash)

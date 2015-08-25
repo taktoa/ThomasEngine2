@@ -50,10 +50,10 @@
   (class <entity>
     ;;; Class fields
     (inherit
-      prop-update
-      modify-props
-      prop-get
-      prop-get-all)
+     prop-update
+     modify-props
+     prop-get
+     prop-get-all)
 
     ;;; Private functions
     ;; Convert degrees to radians

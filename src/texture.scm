@@ -38,9 +38,9 @@
   (class <canvas>
     ;;; Class fields
     (inherit
-      get-width
-      get-height
-      refresh)
+     get-width
+     get-height
+     refresh)
 
     (init-field
      parent

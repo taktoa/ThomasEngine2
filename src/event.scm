@@ -42,8 +42,8 @@
     ;; Translate an event to a more usable form
     (define/private (translate-event e)
       (cond
-        [(is-a? e <mouse-event>) (mouse-translate-event e)]
-        [(is-a? e <key-event>) (key-translate-event e)]))
+       [(is-a? e <mouse-event>) (mouse-translate-event e)]
+       [(is-a? e <key-event>) (key-translate-event e)]))
 
     ;; Unwrap mouse event type, x, and y, and pass them to mouse-translate
     (define/private (mouse-translate-event e)
@@ -59,9 +59,9 @@
     ;; Translate raw key-events to more useable pairs
     (define/private (key-translate x y)
       (cond
-        [(eq? x 'release) (list y 'release)]
-        [(eq? y 'press)   (list x 'press)]
-        [true             (void)]))
+       [(eq? x 'release) (list y 'release)]
+       [(eq? y 'press)   (list x 'press)]
+       [true             (void)]))
 
     ;; Add or remove a key from the key-set
     (define/private (set-pressed-keys l)
