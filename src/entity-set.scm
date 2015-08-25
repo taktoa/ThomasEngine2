@@ -32,51 +32,48 @@
 (define-module (thomas entity-set)
   #:use-module (scheme documentation)
   #:use-module (ice-9  q)
+  #:use-module (ice-9  match)
   #:use-module (thomas entity)
   #:export     (entity-set%))
+
+(define (hash-update! hash-table key function)
+  (letrec ([old-value (hash-ref hash-table key)]
+           [new-value (function old-value)])
+    (hash-set! hash-table key new-value)))
+
+(define (apply-update! update)
+  (letrec ([mod-prop   (λ [ent] (modify-props ent modify-props props))]
+           [set-props! (hash-update! entity-hash name mod-prop)])
+    (match update
+      [(cons n 'add)              (hash-set! entity-hash n #f)]
+      [(cons n 'delete)           (hash-remove! entity-hash n)]
+      [(cons n (? hash-table? p)) (set-props! n p)]
+      [(cons n ent)               (hash-set! entity-hash n ent)]
+      [else                       (throw 'apply-update! "entity" update)])))
 
 (define entity-set%
   (class object%
     ;;; Class fields
     (field
-     [update-queue (make-queue)]
-     [entity-hash  (make-hash)])
+     [update-queue (make-q)]
+     [entity-hash  (make-hash-table)])
 
-    ;;; Private functions
-    ;; Set the properties of one entity
-    (define/private (set-entity-properties! name props)
-      (hash-update! entity-hash name
-                    (λ (e) (send e modify-props props))))
-
-    ;; Apply one update
-    (define/private (apply-update! c)
-      (match c
-        [(cons n 'add) (hash-set! entity-hash n #f)]
-        [(cons n 'delete) (hash-remove! entity-hash n)]
-        [(cons n (? hash? p)) (set-entity-properties! n p)]
-        [(cons n ent) (hash-set! entity-hash n ent)]
-        [else (raise-argument-error 'apply-update! "entity" c)]))
-
-    ;; Clear queue
-    (define/private (clear-queue!)
-      (set! update-queue (make-queue)))
-
-    ;;; Public functions
+    ;;; Methods
     ;; Queue up an entity addition
     (define/public (add-entity name)
-      (enqueue! update-queue (cons name 'add)))
+      (enq! update-queue (cons name 'add)))
 
     ;; Queue up an entity removal
     (define/public (rem-entity name)
-      (enqueue! update-queue (cons name 'delete)))
+      (enq! update-queue (cons name 'delete)))
 
     ;; Queue up entity changes (directly setting entity)
     (define/public (set-entity name ent)
-      (enqueue! update-queue (cons name ent)))
+      (enq! update-queue (cons name ent)))
 
     ;; Queue up entity changes
     (define/public (set-entity-properties name props)
-      (enqueue! update-queue (cons name props)))
+      (enq! update-queue (cons name props)))
 
     ;; Queue up a single entity change
     (define/public (set-entity-property name key value)
@@ -103,7 +100,7 @@
     (define/public (update!)
       (for ([c (in-queue update-queue)])
         (apply-update! c))
-      (clear-queue!))
+      (set! update-queue (make-q)))
 
     ;;; Class initialization
     (super-new)))
