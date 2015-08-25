@@ -72,7 +72,7 @@ This is the style guide for code written in ThomasEngine2.
 
 ## Tests
 
-* Use the [`(unit-test)`][unit-test] library for creating unit tests.
+* Use the [`(srfi srfi-64)`][srfi-64] module for creating unit tests.
 * We should have 100% coverage if possible.
 
 ## Performance
@@ -168,6 +168,6 @@ This is the style guide for code written in ThomasEngine2.
 [ax-2]: #texinfo-reference
 
 [texinfo]:    http://www.gnu.org/software/texinfo/manual/texinfo/texinfo.html
-[unit-test]:  http://www.nongnu.org/guile-lib/doc/ref/unit-test
+[srfi-64]:    http://srfi.schemers.org/srfi-64/srfi-64.html
 [docstrings]: http://www.nongnu.org/guile-lib/doc/ref/scheme.documentation
 
