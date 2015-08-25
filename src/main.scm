@@ -94,6 +94,7 @@
   (make-sprite-entity grass-bm 100 100 0 1/2))
 
 (define main-entity-set (new <sprite-entity-set>))
+
 (send main-entity-set add-entity 'a)
 (send main-entity-set set-entity 'a main-character-entity)
 (send main-entity-set update!)
@@ -115,9 +116,9 @@
 ;; Define a new frame
 (define main-frame
   (new <frame>
-       [label main-frame-label]
-       [style '(no-resize-border)]
-       [stretchable-width #f]
+       [label              main-frame-label]
+       [style              '(no-resize-border)]
+       [stretchable-width  #f]
        [stretchable-height #f]))
 
 ;; Define a new event handler
