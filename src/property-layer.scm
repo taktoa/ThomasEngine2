@@ -32,10 +32,10 @@
 (define-module (thomas property-layer)
   #:use-module (scheme documentation)
   #:use-module (thomas utility)
-  #:export     (property-layer%))
+  #:export     (<property-layer>))
 
-(define property-layer%
-  (class object%
+(define <property-layer>
+  (class <object>
     ;;; Class fields
     (init-field
      bitmap
@@ -49,7 +49,7 @@
     ;;; Private functions
     ;; Returns the hash table's value for a color key at (x, y)
     (define/private (hash-color x y)
-      (define color-gotten (make-object color% "white"))
+      (define color-gotten (make-object <color> "white"))
       (send bitmap-dc get-pixel x y color-gotten)
       (hash-ref color-value-hash (color-numbers color-gotten) 'unknown))
 
@@ -63,7 +63,7 @@
 
     ;; Takes a color name (from the-color-database) and gives its RGB components
     (define/private (color-value color-name)
-      (define color (make-object color% color-name))
+      (define color (make-object <color> color-name))
       (color-numbers color))
 
     ;; Takes the hash-table given at initialization and create a list from it

@@ -32,10 +32,10 @@
 (define-module (thomas texture)
   #:use-module (scheme documentation)
   #:use-module (thomas utility)
-  #:export     (texture-canvas%))
+  #:export     (<texture-canvas>))
 
-(define texture-canvas%
-  (class canvas%
+(define <texture-canvas>
+  (class <canvas>
     ;;; Class fields
     (inherit
       get-width

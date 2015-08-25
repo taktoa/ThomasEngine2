@@ -32,13 +32,13 @@
 (define-module (thomas entity)
   #:use-module (scheme documentation)
   #:export     (make-entity
-                entity%))
+                <entity>))
 
 (define (make-entity prop)
-  (new entity% [properties prop]))
+  (new <entity> [properties prop]))
 
-(define entity%
-  (class object%
+(define <entity>
+  (class <object>
     ;;; Class fields
     (init-field
      [properties (make-hash-table)])
@@ -62,7 +62,7 @@
       (define update
         (compose-list (map update-item cl)))
 
-      (new this% [properties (update properties)]))
+      (new <entity> [properties (update properties)]))
 
     ;; Get a specific property of the entity
     (define/public (prop-get k) (hash-ref properties k))

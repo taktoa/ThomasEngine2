@@ -33,7 +33,7 @@
   #:use-module (scheme documentation)
   #:use-module (thomas entity)
   #:export     (make-sprite-entity
-                sprite-entity%))
+                <sprite-entity>))
 
 (define (make-sprite-entity sprite x y r s)
   (define props
@@ -42,11 +42,11 @@
           'position-y y
           'rotation r
           'scale s))
-  (new sprite-entity%
+  (new <sprite-entity>
        [properties props]))
 
-(define sprite-entity%
-  (class entity%
+(define <sprite-entity>
+  (class <entity>
     ;;; Class fields
     (inherit
       prop-update
@@ -65,7 +65,7 @@
              [sw (send sprite get-width)]
              [sh (send sprite get-height)])
         (define (gen-blank-bm) (make-bitmap (* 2 s sw) (* 2 s sh) #t))
-        (define sprite-dc (new bitmap-dc% [bitmap (gen-blank-bm)]))
+        (define sprite-dc (new <bitmap-dc> [bitmap (gen-blank-bm)]))
         (send sprite-dc set-origin (* s sw) (* s sh))
         (send sprite-dc set-rotation (dtr r))
         (send sprite-dc set-scale s s)

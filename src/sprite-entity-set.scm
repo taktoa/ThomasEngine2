@@ -33,10 +33,10 @@
   #:use-module (scheme documentation)
   #:use-module (thomas entity-set)
   #:use-module (thomas sprite-entity)
-  #:export     (sprite-entity-set%))
+  #:export     (<sprite-entity-set>))
 
-(define sprite-entity-set%
-  (class entity-set%
+(define <sprite-entity-set>
+  (class <entity-set>
     ;;; Class fields
     (inherit
       add-entity
@@ -91,7 +91,7 @@
       (update!)
       (define to-draw (get-entities-within-area width height x y))
       (define sprites (hash-map to-draw (λ (k v) (send v render))))
-      (define dc (new bitmap-dc% [bitmap (make-bitmap width height #t)]))
+      (define dc (new <bitmap-dc> [bitmap (make-bitmap width height #t)]))
       (for-each
        (match-lambda
          [(list rr px py) (send dc draw-bitmap rr

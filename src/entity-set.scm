@@ -34,7 +34,7 @@
   #:use-module (ice-9  q)
   #:use-module (ice-9  match)
   #:use-module (thomas entity)
-  #:export     (entity-set%))
+  #:export     (<entity-set>))
 
 (define (hash-update! hash-table key function)
   (letrec ([old-value (hash-ref hash-table key)]
@@ -51,8 +51,8 @@
       [(cons n ent)               (hash-set! entity-hash n ent)]
       [else                       (throw 'apply-update! "entity" update)])))
 
-(define entity-set%
-  (class object%
+(define <entity-set>
+  (class <object>
     ;;; Class fields
     (field
      [update-queue (make-q)]

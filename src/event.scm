@@ -31,10 +31,10 @@
 
 (define-module (thomas event)
   #:use-module (scheme documentation)
-  #:export     (evt-handler%))
+  #:export     (<evt-handler>))
 
-(define evt-handler%
-  (class object%
+(define <evt-handler>
+  (class <object>
     ;;; Class fields
     (field [pressed-keys (mutable-set)])
 
@@ -42,8 +42,8 @@
     ;; Translate an event to a more usable form
     (define/private (translate-event e)
       (cond
-        [(is-a? e mouse-event%) (mouse-translate-event e)]
-        [(is-a? e key-event%) (key-translate-event e)]))
+        [(is-a? e <mouse-event>) (mouse-translate-event e)]
+        [(is-a? e <key-event>) (key-translate-event e)]))
 
     ;; Unwrap mouse event type, x, and y, and pass them to mouse-translate
     (define/private (mouse-translate-event e)

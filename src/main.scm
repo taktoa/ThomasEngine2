@@ -92,7 +92,7 @@
 (define main-character-entity
   (make-sprite-entity grass-bm 100 100 0 1/2))
 
-(define main-entity-set (new sprite-entity-set%))
+(define main-entity-set (new <sprite-entity-set>))
 (send main-entity-set add-entity 'a)
 (send main-entity-set set-entity 'a main-character-entity)
 (send main-entity-set update!)
@@ -113,19 +113,19 @@
 
 ;; Define a new frame
 (define main-frame
-  (new frame%
+  (new <frame>
        [label main-frame-label]
        [style '(no-resize-border)]
        [stretchable-width #f]
        [stretchable-height #f]))
 
 ;; Define a new event handler
-(define event-handler (make-object evt-handler%))
+(define event-handler (make-object <evt-handler>))
 (define event-handler-thread (send event-handler get-key-thread))
 
 ;; Define a new canvas
 (define main-ac
-  (new texture-canvas%
+  (new <texture-canvas>
        [parent main-frame]
        [texture (get-texture texture-path)]
        [event-callback (λ (c) (thread-send event-handler-thread c))]
@@ -135,7 +135,7 @@
 
 ;; Define a property layer
 (define property-layer
-  (new property-layer%
+  (new <property-layer>
        [bitmap (get-texture property-layer-path)]
        [hash-table property-hash]))
 
