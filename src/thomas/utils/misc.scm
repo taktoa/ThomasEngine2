@@ -180,18 +180,35 @@
 ;;; ----------------------------------------------------------------------------
 
 
+;;; ----------------------------- List functions -----------------------------
+
 (define* (++ #:rest lists)
   (_ "Same as `append', but shorter.")
   (apply append lists))
 
-(define* (nil? value)
-  (_ "Is the given @var{value} equivalent to @code{#nil}?")
-  (and (null? value)
-       (eqv?  value #nil)))
+(define* (nil? #:rest values)
+  (_ "Are the given @var{values} equivalent to @code{#nil}?")
+  (any (λ [x] (and (null? x) (eqv? x #nil)))))
 
 (define* (one? list)
   (_ "Determines whether a @var{list} is a singleton.")
   (= (length list) 1))
+
+;;; --------------------------- Hash table functions ---------------------------
+
+(define* (ht-keys ht)
+  (_ "Get a list of all the keys in the given hash-table.")
+  (hash-map->list (lambda (x y) x) ht))
+
+(define* (ht-vals ht)
+  (_ "Get a list of all the values in the given hash-table.")
+  (hash-map->list (lambda (x y) y) ht))
+
+(define* (ht-pairs ht)
+  (_ "Convert a hash-table (@var{ht}) to a list of pairs of keys and values.")
+  (hash-map->list (lambda (x y) (cons x y)) ht))
+
+;;; ----------------------------- String functions -----------------------------
 
 (define* (++s #:rest strings)
   (_ "Same as `string-append', but shorter.")
@@ -217,6 +234,8 @@ Optionally, provide @var{eol-string} as a keyword argument;
      [(equal? eol-string "\n") (string-split input     #\lf)]
      [(equal? eol-string "\r") (string-split input     #\cr)]
      [else                     (string-split (fix-eol) #\lf)])))
+
+;;; ----------------------------- I/O functions -----------------------------
 
 (define* (outprintf fmt #:rest args)
   (_ "Format and print the given arguments to the current output port.")
@@ -278,6 +297,8 @@ with the @code{comment%} parameter.")
   (errprintf (string-append "~a" (_% "Error:") "~%" "~a" "~%")
              (cfmtstr "")
              (apply cfmtstr `(,fmt ,@args))))
+
+;;; ----------------------------- Miscellaneous functions -----------------------------
 
 (define* (install-locale)
   (_ "Install the system locale. This is required for printing Unicode properly
