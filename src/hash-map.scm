@@ -120,7 +120,7 @@
             → Map k a
             → Map k a)
 (define-container-function (adjust f k m)
-  "/O(log n)/. Update a value at a specific key with the result of the provided function.
+  "O(log n). Update a value at a specific key with the result of the provided function.
 When the key is not
 a member of the map, the original map is returned.
 
@@ -135,7 +135,7 @@ a member of the map, the original map is returned.
                      → Map k a
                      → Map k a)
 (define-container-function (adjust-with-key f k m)
-  "/O(log n)/. Adjust a value at a specific key. When the key is not
+  "O(log n). Adjust a value at a specific key. When the key is not
 a member of the map, the original map is returned."
   '())
 
@@ -145,7 +145,7 @@ a member of the map, the original map is returned."
            → Map k a
            → Map k a)
 (define-container-function (alter f k m)
-  "/O(log n)/. The expression (@'alter' f k map@) alters the value @x@ at @k@, or absence thereof.
+  "O(log n). The expression (@'alter' f k map@) alters the value @x@ at @k@, or absence thereof.
 'alter' can be used to insert, delete, or update a value in a 'Map'.
 In short : @'lookup' k ('alter' f k m) = f ('lookup' k m)@.
 
@@ -164,12 +164,12 @@ In short : @'lookup' k ('alter' f k m) = f ('lookup' k m)@.
                      → Map k b
                      → Map k a)
 (define-container-function (difference-with f m1 m2)
-  "/O(n+m)/. Difference with a combining function.
+  "O(n+m). Difference with a combining function.
 When two equal keys are
 encountered, the combining function is applied to the values of these keys.
 If it returns 'Nothing', the element is discarded (proper set difference). If
 it returns (@'Just' y@), the element is updated with a new value @y@.
-The implementation uses an efficient /hedge/ algorithm comparable with /hedge-union/.
+The implementation uses an efficient hedge algorithm comparable with hedge-union.
 
 > let f al ar = if al == \"b\" then Just (al ++ \":\" ++ ar) else Nothing
 > differenceWith f (from-list [(5, \"a\"), (3, \"b\")]) (from-list [(5, \"A\"), (3, \"B\"), (7, \"C\")]) == singleton 3 \"b:B\""
@@ -181,11 +181,11 @@ The implementation uses an efficient /hedge/ algorithm comparable with /hedge-un
                          → Map k b
                          → Map k a)
 (define-container-function (difference-with-key f m1 m2)
-  "/O(n+m)/. Difference with a combining function. When two equal keys are
+  "O(n+m). Difference with a combining function. When two equal keys are
 encountered, the combining function is applied to the key and both values.
 If it returns 'Nothing', the element is discarded (proper set difference). If
 it returns (@'Just' y@), the element is updated with a new value @y@.
-The implementation uses an efficient /hedge/ algorithm comparable with /hedge-union/.
+The implementation uses an efficient hedge algorithm comparable with hedge-union.
 
 > let f k al ar = if al == \"b\" then Just ((show k) ++ \":\" ++ al ++ \"|\" ++ ar) else Nothing
 > differenceWithKey f (from-list [(5, \"a\"), (3, \"b\")]) (from-list [(5, \"A\"), (3, \"B\"), (10, \"C\")]) == singleton 3 \"3:b|B\""
@@ -208,8 +208,8 @@ value at key @k@ or returns default value @def@ when the key is not in the map.
                    ⇒ [(k, a)]
                    → Map k a)
 (define-container-function (from-asc-list xs)
-  "/O(n)/. Build a map from an ascending list in linear time.
-/The precondition (input list is ascending) is not checked./
+  "O(n). Build a map from an ascending list in linear time.
+The precondition (input list is ascending) is not checked.
 
 > fromAscList [(3,\"b\"), (5,\"a\")] == from-list [(3, \"b\"), (5, \"a\")]
 > fromAscList [(3,\"b\"), (5,\"a\"), (5,\"b\")] == from-list [(3, \"b\"), (5, \"b\")]
@@ -222,8 +222,8 @@ value at key @k@ or returns default value @def@ when the key is not in the map.
                         → [(k, a)]
                         → Map k a)
 (define-container-function (from-asc-list-with f xs)
-  "/O(n)/. Build a map from an ascending list in linear time with a combining function for equal keys.
-/The precondition (input list is ascending) is not checked./
+  "O(n). Build a map from an ascending list in linear time with a combining function for equal keys.
+The precondition (input list is ascending) is not checked.
 
 > fromAscListWith (++) [(3,\"b\"), (5,\"a\"), (5,\"b\")] == from-list [(3, \"b\"), (5, \"ba\")]
 > valid (fromAscListWith (++) [(3,\"b\"), (5,\"a\"), (5,\"b\")]) == True
@@ -235,9 +235,9 @@ value at key @k@ or returns default value @def@ when the key is not in the map.
                             → [(k, a)]
                             → Map k a)
 (define-container-function (from-asc-list-with-key f xs)
-  "/O(n)/. Build a map from an ascending list in linear time with a
+  "O(n). Build a map from an ascending list in linear time with a
 combining function for equal keys.
-/The precondition (input list is ascending) is not checked./
+The precondition (input list is ascending) is not checked.
 
 > let f k a1 a2 = (show k) ++ \":\" ++ a1 ++ a2
 > fromAscListWithKey f [(3,\"b\"), (5,\"a\"), (5,\"b\"), (5,\"b\")] == from-list [(3, \"b\"), (5, \"5:b5:ba\")]
@@ -248,8 +248,8 @@ combining function for equal keys.
 (sig from-distinct-asc-list ∷ [(k, a)]
                             → Map k a)
 (define-container-function (from-distinct-asc-list xs)
-  "/O(n)/. Build a map from an ascending list of distinct elements in linear time.
-/The precondition is not checked./
+  "O(n). Build a map from an ascending list of distinct elements in linear time.
+The precondition is not checked.
 
 > fromDistinctAscList [(3,\"b\"), (5,\"a\")] == from-list [(3, \"b\"), (5, \"a\")]
 > valid (fromDistinctAscList [(3,\"b\"), (5,\"a\")]) == True
@@ -263,7 +263,7 @@ create, it is not inlined, so we inline it manually."
                ⇒ [(k, a)]
                → Map k a)
 (define-container-function (from-list xs)
-  "/O(n*log n)/. Build a map from a list of keySLASHvalue pairs. See also 'fromAscList'.
+  "O(n*log n). Build a map from a list of key/value pairs. See also 'fromAscList'.
 If the list contains more than one value for the same key, the last value
 for the key is retained.
 
@@ -283,7 +283,7 @@ create, it is not inlined, so we inline it manually."
                     → [(k, a)]
                     → Map k a)
 (define-container-function (from-list-with f xs)
-  "/O(n*log n)/. Build a map from a list of keySLASHvalue pairs with a combining function. See also 'fromAscListWith'.
+  "O(n*log n). Build a map from a list of key/value pairs with a combining function. See also 'fromAscListWith'.
 
 > from-listWith (++) [(5,\"a\"), (5,\"b\"), (3,\"b\"), (3,\"a\"), (5,\"a\")] == from-list [(3, \"ab\"), (5, \"aba\")]
 > from-listWith (++) [] == empty"
@@ -294,7 +294,7 @@ create, it is not inlined, so we inline it manually."
                         → [(k, a)]
                         → Map k a)
 (define-container-function (from-list-with-key f xs)
-  "/O(n*log n)/. Build a map from a list of keySLASHvalue pairs with a combining function. See also 'fromAscListWithKey'.
+  "O(n*log n). Build a map from a list of key/value pairs with a combining function. See also 'fromAscListWithKey'.
 
 > let f k a1 a2 = (show k) ++ a1 ++ a2
 > from-listWithKey f [(5,\"a\"), (5,\"b\"), (3,\"b\"), (3,\"a\"), (5,\"a\")] == from-list [(3, \"3ab\"), (5, \"5a5ba\")]
@@ -305,7 +305,7 @@ create, it is not inlined, so we inline it manually."
               → Set k
               → Map k a)
 (define-container-function (from-set f set)
-  "/O(n)/. Build a map from a set of keys and a function which for each key
+  "O(n). Build a map from a set of keys and a function which for each key
 computes its value.
 
 > fromSet (\\k -> replicate k 'a') (Data.Set.from-list [3, 5]) == from-list [(5,\"aaaaa\"), (3,\"aaa\")]
@@ -333,7 +333,7 @@ If the key is already present in the map, the associated value is replaced with
                             → a
                             → Map k a)
 (define-container-function (insert-lookup-with-key f k v m)
-  "/O(log n)/. Combines insert operation with old value retrieval.
+  "O(log n). Combines insert operation with old value retrieval.
 The expression (@'insertLookupWithKey' f k x map@)
 is a pair where the first element is equal to (@'lookup' k map@)
 and the second element equal to (@'insertWithKey' f k x map@).
@@ -357,7 +357,7 @@ This is how to define @insertLookup@ using @insertLookupWithKey@:
                  → Map k a
                  → Map k a)
 (do-nothing (insert-with f k v m)
-  "/O(log n)/. Insert with a function, combining new value and old value.
+  "O(log n). Insert with a function, combining new value and old value.
 @('insert-with' f key value m)@ will insert the pair @(tup key value)@ into @m@
 if @key@ does not exist in the map. If the key does exist, the function will
 insert the pair @(tup key (f new-value old-value))@.
@@ -374,7 +374,7 @@ insert the pair @(tup key (f new-value old-value))@.
                      → Map k a
                      → Map k a)
 (define-container-function (insert-with-key f k v m)
-  "/O(log n)/. Insert with a function, combining key, new value and old value.
+  "O(log n). Insert with a function, combining key, new value and old value.
 @'insertWithKey' f key value mp@
 will insert the pair (key, value) into @mp@ if key does
 not exist in the map. If the key does exist, the function will
@@ -393,8 +393,8 @@ Note that the key passed to f is the same key passed to 'insertWithKey'.
                        → Map k b
                        → Map k c)
 (define-container-function (intersection-with f m1 m2)
-  "/O(n+m)/. Intersection with a combining function.  The implementation uses
-an efficient /hedge/ algorithm comparable with /hedge-union/.
+  "O(n+m). Intersection with a combining function.  The implementation uses
+an efficient hedge algorithm comparable with hedge-union.
 
 > intersectionWith (++) (from-list [(5, \"a\"), (3, \"b\")]) (from-list [(5, \"A\"), (7, \"C\")]) == singleton 5 \"aA\""
   '())
@@ -405,8 +405,8 @@ an efficient /hedge/ algorithm comparable with /hedge-union/.
                            → Map k b
                            → Map k c)
 (define-container-function (intersection-with-key f m1 m2)
-  "/O(n+m)/. Intersection with a combining function.  The implementation uses
-an efficient /hedge/ algorithm comparable with /hedge-union/.
+  "O(n+m). Intersection with a combining function.  The implementation uses
+an efficient hedge algorithm comparable with hedge-union.
 
 > let f k al ar = (show k) ++ \":\" ++ al ++ \"|\" ++ ar
 > intersectionWithKey f (from-list [(5, \"a\"), (3, \"b\")]) (from-list [(5, \"A\"), (7, \"C\")]) == singleton 5 \"5:a|A\""
@@ -416,7 +416,7 @@ an efficient /hedge/ algorithm comparable with /hedge-union/.
          → Map k a
          → Map k b)
 (define-container-function (map f m)
-  "/O(n)/. Map a function over all values in the map.
+  "O(n). Map a function over all values in the map.
 
 > map (++ \"x\") (from-list [(5,\"a\"), (3,\"b\")]) == from-list [(3, \"bx\"), (5, \"ax\")]"
   '())
@@ -426,7 +426,7 @@ an efficient /hedge/ algorithm comparable with /hedge-union/.
                → Map k b
                → (a, Map k c))
 (define-container-function (map-accum f i m)
-  "/O(n)/. The function 'mapAccum' threads an accumulating
+  "O(n). The function 'mapAccum' threads an accumulating
 argument through the map in ascending order of keys.
 
 > let f a b = (a ++ b, b ++ \"X\")
@@ -437,7 +437,7 @@ argument through the map in ascending order of keys.
                  → a
                  → Map k b → (a, Map k c))
 (define-container-function (map-accum-l)
-  "/O(n)/. The function 'mapAccumL' threads an accumulating
+  "O(n). The function 'mapAccumL' threads an accumulating
 argument through the map in ascending order of keys."
   '())
 
@@ -446,7 +446,7 @@ argument through the map in ascending order of keys."
                  → Map k b
                  → (a, Map k c))
 (define-container-function (map-accum-r)
-  "/O(n)/. The function 'mapAccumR' threads an accumulating
+  "O(n). The function 'mapAccumR' threads an accumulating
 argument through the map in descending order of keys."
   '())
 
@@ -455,7 +455,7 @@ argument through the map in descending order of keys."
                         → Map k b
                         → (a, Map k c))
 (define-container-function (map-accum-with-key)
-  "/O(n)/. The function 'mapAccumWithKey' threads an accumulating
+  "O(n). The function 'mapAccumWithKey' threads an accumulating
 argument through the map in ascending order of keys.
 
 > let f a k b = (a ++ \" \" ++ (show k) ++ \"-\" ++ b, b ++ \"X\")
@@ -466,7 +466,7 @@ argument through the map in ascending order of keys.
                 → Map k a
                 → (Map k b, Map k c))
 (define-container-function (map-either)
-  "/O(n)/. Map values and separate the 'Left' and 'Right' results.
+  "O(n). Map values and separate the 'Left' and 'Right' results.
 
 > let f a = if a < \"c\" then Left a else Right a
 > mapEither f (from-list [(5,\"a\"), (3,\"b\"), (1,\"x\"), (7,\"z\")])
@@ -480,7 +480,7 @@ argument through the map in ascending order of keys.
                          → Map k a
                          → (Map k b, Map k c))
 (define-container-function (map-either-with-key)
-  "/O(n)/. Map keysSLASHvalues and separate the 'Left' and 'Right' results.
+  "O(n). Map keys/values and separate the 'Left' and 'Right' results.
 
 > let f k a = if k < 5 then Left (k * 2) else Right (a ++ a)
 > mapEitherWithKey f (from-list [(5,\"a\"), (3,\"b\"), (1,\"x\"), (7,\"z\")])
@@ -496,7 +496,7 @@ argument through the map in ascending order of keys.
                    → Map k a
                    → Map k' a)
 (define-container-function (map-keys-with)
-  "/O(n*log n)/.
+  "O(n*log n).
 @'mapKeysWith' c f s@ is the map obtained by applying @f@ to each key of @s@.
 
 The size of the result may be smaller if @f@ maps two or more distinct
@@ -511,7 +511,7 @@ combined using @c@.
                → Map k a
                → Map k b)
 (define-container-function (map-maybe)
-  "/O(n)/. Map values and collect the 'Just' results.
+  "O(n). Map values and collect the 'Just' results.
 
 > let f x = if x == \"a\" then Just \"new a\" else Nothing
 > mapMaybe f (from-list [(5,\"a\"), (3,\"b\")]) == singleton 5 \"new a\""
@@ -521,7 +521,7 @@ combined using @c@.
                         → Map k a
                         → Map k b)
 (define-container-function (map-maybe-with-key)
-  "/O(n)/. Map keysSLASHvalues and collect the 'Just' results.
+  "O(n). Map keys/values and collect the 'Just' results.
 
 > let f k _ = if k < 5 then Just (\"key : \" ++ (show k)) else Nothing
 > mapMaybeWithKey f (from-list [(5,\"a\"), (3,\"b\")]) == singleton 3 \"key : 3\""
@@ -531,7 +531,7 @@ combined using @c@.
                   → Map k a
                   → Map k b)
 (define-container-function (map-with-key)
-  "/O(n)/. Map a function over all values in the map.
+  "O(n). Map a function over all values in the map.
 
 > let f key x = (show key) ++ \":\" ++ x
 > mapWithKey f (from-list [(5,\"a\"), (3,\"b\")]) == from-list [(3, \"3:b\"), (5, \"5:a\")]"
@@ -542,7 +542,7 @@ combined using @c@.
                     → (Map k a → Map k c)
                     → (Map k b → Map k c))
 (define-container-function (merge-with-key f g1 g2 m1 m2)
-  "/O(n+m)/. A high-performance universal combining function. This function
+  "O(n+m). A high-performance universal combining function. This function
 is used to define 'unionWith', 'unionWithKey', 'differenceWith',
 'differenceWithKey', 'intersectionWith', 'intersectionWithKey' and can be
 used to define other custom combine functions.
@@ -593,7 +593,7 @@ The values can be modified arbitrarily. Most common variants of @only1@ and
                 → Map k a
                 → Map k a)
 (define-container-function (union-with f m1 m2)
-  "/O(n+m)/. Union with a combining function. The implementation uses the efficient /hedge-union/ algorithm.
+  "O(n+m). Union with a combining function. The implementation uses the efficient hedge-union algorithm.
 
 > unionWith (++) (from-list [(5, \"a\"), (3, \"b\")]) (from-list [(5, \"A\"), (7, \"C\")]) == from-list [(3, \"b\"), (5, \"aA\"), (7, \"C\")]"
   '())
@@ -604,8 +604,8 @@ The values can be modified arbitrarily. Most common variants of @only1@ and
                     → Map k a
                     → Map k a)
 (define-container-function (union-with-key f m1 m2)
-  "/O(n+m)/.
-Union with a combining function. The implementation uses the efficient /hedge-union/ algorithm.
+  "O(n+m).
+Union with a combining function. The implementation uses the efficient hedge-union algorithm.
 
 > let f key left_value right_value = (show key) ++ \":\" ++ left_value ++ \"|\" ++ right_value
 > unionWithKey f (from-list [(5, \"a\"), (3, \"b\")]) (from-list [(5, \"A\"), (7, \"C\")]) == from-list [(3, \"b\"), (5, \"5:a|A\"), (7, \"C\")]"
@@ -629,7 +629,7 @@ Union with a combining function. The implementation uses the efficient /hedge-un
             → Map k a
             → Map k a)
 (define-container-function (update f k m)
-  "/O(log n)/. The expression (@'update' f k map@) updates the value @x@
+  "O(log n). The expression (@'update' f k map@) updates the value @x@
 at @k@ (if it is in the map). If (@f x@) is 'Nothing', the element is
 deleted. If it is (@'Just' y@), the key @k@ is bound to the new value @y@.
 
@@ -644,7 +644,7 @@ deleted. If it is (@'Just' y@), the key @k@ is bound to the new value @y@.
                → Map k a
                → Map k a)
 (define-container-function (update-at f idx m)
-  "/O(log n)/. Update the element at /index/. Calls 'error' when an
+  "O(log n). Update the element at index. Calls 'error' when an
 invalid index is used.
 
 > updateAt (\\ _ _ -> Just \"x\") 0    (from-list [(5,\"a\"), (3,\"b\")]) == from-list [(3, \"x\"), (5, \"a\")]
@@ -663,7 +663,7 @@ invalid index is used.
                             → Map k a
                             → (Maybe a, Map k a))
 (define-container-function (update-lookup-with-key f k m)
-  "/O(log n)/. Lookup and update. See also 'updateWithKey'.
+  "O(log n). Lookup and update. See also 'updateWithKey'.
 The function returns changed value, if it is updated.
 Returns the original key value if the map entry is deleted.
 
@@ -677,7 +677,7 @@ Returns the original key value if the map entry is deleted.
                 → Map k a
                 → Map k a)
 (define-container-function (update-max f m)
-  "/O(log n)/. Update the value at the maximal key.
+  "O(log n). Update the value at the maximal key.
 
 > updateMax (\\ a -> Just (\"X\" ++ a)) (from-list [(5,\"a\"), (3,\"b\")]) == from-list [(3, \"b\"), (5, \"Xa\")]
 > updateMax (\\ _ -> Nothing)         (from-list [(5,\"a\"), (3,\"b\")]) == singleton 3 \"b\""
@@ -687,7 +687,7 @@ Returns the original key value if the map entry is deleted.
                          → Map k a
                          → Map k a)
 (define-container-function (update-max-with-key f m)
-  "/O(log n)/. Update the value at the maximal key.
+  "O(log n). Update the value at the maximal key.
 
 > updateMaxWithKey (\\ k a -> Just ((show k) ++ \":\" ++ a)) (from-list [(5,\"a\"), (3,\"b\")]) == from-list [(3,\"b\"), (5,\"5:a\")]
 > updateMaxWithKey (\\ _ _ -> Nothing)                     (from-list [(5,\"a\"), (3,\"b\")]) == singleton 3 \"b\""
@@ -697,7 +697,7 @@ Returns the original key value if the map entry is deleted.
                 → Map k a
                 → Map k a)
 (define-container-function (update-min f m)
-  "/O(log n)/. Update the value at the minimal key.
+  "O(log n). Update the value at the minimal key.
 
 > updateMin (\\ a -> Just (\"X\" ++ a)) (from-list [(5,\"a\"), (3,\"b\")]) == from-list [(3, \"Xb\"), (5, \"a\")]
 > updateMin (\\ _ -> Nothing)         (from-list [(5,\"a\"), (3,\"b\")]) == singleton 5 \"a\""
@@ -707,7 +707,7 @@ Returns the original key value if the map entry is deleted.
                          → Map k a
                          → Map k a)
 (define-container-function (update-min-with-key f m)
-  "/O(log n)/. Update the value at the minimal key.
+  "O(log n). Update the value at the minimal key.
 
 > updateMinWithKey (\\ k a -> Just ((show k) ++ \":\" ++ a)) (from-list [(5,\"a\"), (3,\"b\")]) == from-list [(3,\"3:b\"), (5,\"a\")]
 > updateMinWithKey (\\ _ _ -> Nothing) (from-list [(5,\"a\"), (3,\"b\")]) == singleton 5 \"a\""
@@ -719,7 +719,7 @@ Returns the original key value if the map entry is deleted.
                      → Map k a
                      → Map k a)
 (define-container-function (update-with-key f k m)
-  "/O(log n)/. The expression (@'updateWithKey' f k map@) updates the
+  "O(log n). The expression (@'updateWithKey' f k map@) updates the
 value @x@ at @k@ (if it is in the map). If (@f k x@) is 'Nothing',
 the element is deleted. If it is (@'Just' y@), the key @k@ is bound
 to the new value @y@.
