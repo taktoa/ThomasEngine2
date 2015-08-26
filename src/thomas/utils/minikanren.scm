@@ -398,8 +398,6 @@
        (or (member* u (car v)) (member* u (cdr v))))
       (else #f))))
 
-;;;
-
 (define drop-N-b/c-const
   (lambdag@ (c : B E S D Y N T)
     (let ((const? (lambda (n)
