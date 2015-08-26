@@ -30,6 +30,7 @@
 ;;; Code:
 
 (define-module (thomas property-layer)
+  #:version    (0 0 1)
   #:use-module (scheme documentation)
   #:use-module (ice-9  hash-table)
   #:use-module (thomas utility)

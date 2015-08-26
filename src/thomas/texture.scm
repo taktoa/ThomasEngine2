@@ -30,6 +30,7 @@
 ;;; Code:
 
 (define-module (thomas texture)
+  #:version    (0 0 1)
   #:use-module (scheme documentation)
   #:use-module (thomas utility)
   #:export     (<texture-canvas>))

@@ -30,6 +30,7 @@
 ;;; Code:
 
 (define-module (thomas entity-set)
+  #:version    (0 0 1)
   #:use-module (scheme documentation)
   #:use-module (ice-9  q)
   #:use-module (ice-9  match)

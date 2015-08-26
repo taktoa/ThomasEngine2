@@ -30,6 +30,7 @@
 ;;; Code:
 
 (define-module (thomas entity)
+  #:version    (0 0 1)
   #:use-module (scheme documentation)
   #:use-module (srfi   srfi-26)
   #:use-module (ice-9  hash-table)

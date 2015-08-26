@@ -30,6 +30,7 @@
 ;;; Code:
 
 (define-module (thomas event)
+  #:version    (0 0 1)
   #:use-module (scheme documentation)
   #:export     (<evt-handler>))
 

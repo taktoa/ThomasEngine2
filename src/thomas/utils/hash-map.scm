@@ -31,6 +31,7 @@
 ;;; Code:
 
 (define-module (thomas utils hash-map)
+  #:version    (0 0 1)
   #:use-module (ice-9  hash-table)
   #:use-module (srfi   srfi-1)
   #:use-module (srfi   srfi-11)

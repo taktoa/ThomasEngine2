@@ -30,6 +30,7 @@
 ;;; Code:
 
 (define-module (thomas sprite-entity-set)
+  #:version    (0 0 1)
   #:use-module (scheme documentation)
   #:use-module (ice-9  hash-table)
   #:use-module (thomas entity-set)

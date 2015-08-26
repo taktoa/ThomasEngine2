@@ -30,7 +30,10 @@
 ;;; Code:
 
 (define-module (thomas utils type-system)
+  #:version    (0 0 1)
+  #:use-module (thomas utils)
   #:use-module (thomas utils minikanren)
+  #:use-module (scheme documentation)
   #:use-module (ice-9  hash-table)
   #:use-module (ice-9  format)
   #:use-module (ice-9  match)
@@ -41,20 +44,37 @@
   #:use-module (oop    goops)
   #:export     ())
 
-(define* (printf fmt #:rest args)
-  (display (apply format (cons #f (cons fmt args)))))
+(define-class-with-docs <type> ()
+  "A plain type."
+  (type #:init-keyword #:type
+        #:getter       get-type))
 
-(define* (printfln fmt #:rest args)
-  (apply format (cons #t (cons (string-append fmt "~%") args))))
+(define-class-with-docs <constrained-type> (<type>)
+  "A type constrained by a constraint."
+  (constraint #:init-keyword #:constraint
+              #:getter       get-constraint))
 
-(define* (signature name type)
+(define* (make-type type)
+  "Make a plain type from the given type sexpr."
+  (make <type>
+    #:type type))
+
+(define* (make-constrained-type constraint type)
+  "Make a constrained type from the given constraint sexpr and type sexpr."
+  (make <constrained-type>
+    #:constraint constraint
+    #:type type))
+
+(define* (print-signature name type)
+  "Print the given type signature."
   (printfln "")
   (printfln "Signature:")
   (printfln "    Name: ~s" name)
   (printfln "    Type: ~s" type)
   (printfln ""))
 
-(define* (def-container-func name formals doc body)
+(define* (print-container-func name formals doc body)
+  "Print the given container function."
   (printfln "")
   (printfln "Container Function:")
   (printfln "    Name:      ~s" name)
@@ -63,11 +83,13 @@
   (printfln "    Docstring: ~a" doc)
   (printfln ""))
 
-(define (process-type input)
-  (let ([is-fat-arrow (λ (x) (or (eq? '⇒ x) (eq? '=> x)))])
+(define* (process-type input)
+  (let ([is-fat-arrow (λ (x) (or (eq? '⇒ x) (eq? '=> x)))]
+        [split-fat    (delay (break is-fat-arrow input))])
     (if (any is-fat-arrow input)
-        (let-values ([(pfx sfx) (break is-fat-arrow input)]) (cons pfx sfx))
-        (cons '() input))))
+        (let-values ([(constr type) (force split-fat)])
+          (make-constrained-type pfx sfx))
+        (make-type input))))
 
 (define-syntax do-nothing (λ (stx) #''()))
 
@@ -79,12 +101,6 @@
 (define-syntax sig
   (syntax-rules ()
     [(sig name ∷ type ...) (signature 'name (process-type '(type ...)))]))
-
-(when (defined? 'setlocale)
-  (catch 'system-error
-    (λ [] (setlocale LC_ALL ""))
-    (lambda* [#:rest args] (printf "failed to install locale: ~a"
-                                   (strerror (system-error-errno args))))))
 
 (define-syntax test
   (syntax-rules ()
@@ -136,12 +152,42 @@
 (define* (type-of-expr exp #:optional (env '()))
   (car (run 1 [t] (!- exp env t))))
 
-(define (test-types%)
-  (test "types%"
+(define* (test-types)
+  (test "types"
         (run 10 [q] (fresh [t exp]
                            (!- exp '() t)
                            (== `((+ 0 1) :: ,t) q)))
         '((+ 0 1) :: Int)))
+
+(define* (get-recursive-deps mod)
+  "Helper function for `get-module-deps'."
+  (letrec ([recurse get-recursive-deps]
+           [deps    '()])
+    (append deps (map recurse deps))
+    (printfln "hi")
+    '()))
+
+(define* (get-module-deps mod)
+  "Determines the recursive dependencies of the given module.
+The given module (@var{mod}) can either be an s-expression:
+@code{(get-module-deps '(ice-9 format))}
+Or it can be an instance of @code{<module>}:
+@code{(define example (resolve-module '(ice-9 popen)))}
+@code{(get-module-deps example) ;; => '(... all the recursive dependencies ...)}
+@code{(is-a? example-module <module>) ;; => #t}"
+  (uniquify-modules
+   (get-recursive-deps
+    (if (is-a? given <module>) given (resolve-module given)))))
+
+(define* (get-current-deps)
+  "Same as `get-module-deps', but runs on the current module."
+  (get-module-deps (current-module)))
+
+(define* (get-module-deps #:rest args)
+  "."
+  (case args
+    [()      (get-recursive-deps (current-module))]
+    [(given) (get-recursive-deps )]))
 
 ;;;;----------------------------------------------------------------------------
 
