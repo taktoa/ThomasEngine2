@@ -45,28 +45,28 @@
   #:export     ())
 
 (define-class-with-docs <type> ()
-  "A plain type."
+  (_ "A plain type.")
   (type #:init-keyword #:type
         #:getter       get-type))
 
 (define-class-with-docs <constrained-type> (<type>)
-  "A type constrained by a constraint."
+  (_ "A type constrained by a constraint.")
   (constraint #:init-keyword #:constraint
               #:getter       get-constraint))
 
 (define* (make-type type)
-  "Make a plain type from the given type sexpr."
+  (_ "Make a plain type from the given type sexpr.")
   (make <type>
     #:type type))
 
 (define* (make-constrained-type constraint type)
-  "Make a constrained type from the given constraint sexpr and type sexpr."
+  (_ "Make a constrained type from the given constraint sexpr and type sexpr.")
   (make <constrained-type>
     #:constraint constraint
     #:type type))
 
 (define* (print-signature name type)
-  "Print the given type signature."
+  (_ "Print the given type signature.")
   (printfln "")
   (printfln "Signature:")
   (printfln "    Name: ~s" name)
@@ -74,7 +74,7 @@
   (printfln ""))
 
 (define* (print-container-func name formals doc body)
-  "Print the given container function."
+  (_ "Print the given container function.")
   (printfln "")
   (printfln "Container Function:")
   (printfln "    Name:      ~s" name)
@@ -90,8 +90,6 @@
         (let-values ([(constr type) (force split-fat)])
           (make-constrained-type constr type))
         (make-type input))))
-
-(define-syntax do-nothing (λ (stx) #''()))
 
 (define-syntax define-container-function
   (syntax-rules ()
@@ -159,27 +157,34 @@
                            (== `((+ 0 1) :: ,t) q)))
         '((+ 0 1) :: Int)))
 
-(define* (get-recursive-deps mod)
-  "Helper function for `get-module-deps'."
+(define* (interface->module interface)
+  (_ "Find the module corresponding to the given @var{interface}.")
+  (module-resolve
+   (module-name interface)))
+
+(define* (modules-used-by module)
+  (_ "Get all the modules used by the given @var{module}.")
+  (map interface->module (module-uses module)))
+
+(define* (get-recursive-deps module)
+  (_ "Helper function for `get-module-deps'.")
   (letrec ([recurse get-recursive-deps]
-           [deps    '()])
-    (append deps (map recurse deps))
-    (printfln "hi")
-    '()))
+           [deps    (modules-used-by module)])
+    (append deps (map recurse deps))))
 
 ;; FIXME: add a real definition
 (define* (remove-duplicate-modules mod-list)
-  "Remove duplicates from a list of modules."
+  (_ "Remove duplicates from a list of modules.")
   mod-list)
 
 (define* (get-module-deps mod)
-  "Determines the recursive dependencies of the given module.
+  (_ "Determines the recursive dependencies of the given module.
 The given module (@var{mod}) can either be an s-expression:
 @code{(get-module-deps '(ice-9 format))}
 Or it can be an instance of @code{<module>}:
 @code{(define example (resolve-module '(ice-9 popen)))}
 @code{(get-module-deps example) ;; => '(... all the recursive dependencies ...)}
-@code{(is-a? example-module <module>) ;; => #t}"
+@code{(is-a? example-module <module>) ;; => #t}")
   (remove-duplicate-modules
    (get-recursive-deps
     (if (is-a? given <module>) given (resolve-module given)))))
@@ -193,6 +198,8 @@ Or it can be an instance of @code{<module>}:
   (case args
     [()      (get-recursive-deps (current-module))]
     [(given) (get-recursive-deps )]))
+
+;; (provide 'type-checker)
 
 ;;;;----------------------------------------------------------------------------
 
