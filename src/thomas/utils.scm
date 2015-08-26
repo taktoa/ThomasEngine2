@@ -77,6 +77,7 @@
                 λ* thunk
                 _ _%
                 get-default-eol
+                do-nothing
 
                 ;; Classes
                 <timer> make-timer
@@ -115,20 +116,35 @@
 ;;; --------------------------------- Macros -----------------------------------
 ;;; ----------------------------------------------------------------------------
 
-;; FIXME: convert to define-syntax + add documentation
-(define-syntax-rule (EXIT-SUCCESS) 0)
-(define-syntax-rule (EXIT-FAILURE) -1)
 
-;; FIXME: convert to define-syntax + add documentation
-(define-syntax-rule (λ* args body ...) (lambda* args body ...))
-(define-syntax-rule (thunk body ...)   (lambda* []   body ...))
+;; FIXME: add documentation
+(define-syntax EXIT-SUCCESS (λ [stx] #'0))
+;; FIXME: add documentation
+(define-syntax EXIT-FAILURE (λ [stx] #'-1))
 
-;; FIXME: convert to define-syntax + add documentation
-(define-syntax-rule (_ msg)  (gettext msg "thomas-engine"))
-(define-syntax-rule (_% msg) (gettext msg "thomas-engine"))
+;; FIXME: add documentation
+(define-syntax λ*
+  (syntax-rules ()
+    [(λ* args body ...) (lambda* args body ...)]))
+;; FIXME: add documentation
+(define-syntax thunk
+  (syntax-rules ()
+    [(thunk body ...) (lambda [] body ...)]))
 
-;; FIXME: convert to define-syntax + add documentation
-(define-syntax-rule (get-default-eol) (fmtstr "~%"))
+;; FIXME: add documentation
+(define-syntax _
+  (syntax-rules () [(_ msg)  (gettext msg "thomas-engine")]))
+;; FIXME: add documentation
+(define-syntax _%
+  (syntax-rules () [(_% msg) (gettext msg "thomas-engine")]))
+
+;; FIXME: add documentation
+(define-syntax get-default-eol
+  (λ [stx] #`#,(format #t "~%")))
+;; FIXME: add documentation
+(define-syntax do-nothing
+  (λ [stx] #''()))
+
 
 ;;; ----------------------------------------------------------------------------
 ;;; -------------------------------- Parameters --------------------------------
