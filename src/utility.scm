@@ -46,6 +46,6 @@
 
 ;; Create a timer
 (define (create-timer callback rate)
-  (new <timer>
-       [notify-callback callback]
-       [interval        (hz-to-ms rate)]))
+  (make <timer>
+    [notify-callback callback]
+    [interval        (hz-to-ms rate)]))
