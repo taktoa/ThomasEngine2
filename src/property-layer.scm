@@ -33,45 +33,92 @@
   #:use-module (scheme documentation)
   #:use-module (ice-9  hash-table)
   #:use-module (thomas utility)
-  #:export     (<property-layer>))
+  #:export     (<property-layer>
+                property-at-pos))
+
+;;; Classes
+(define-class <hash-map> ()
+  (ht #:init-value))
+
+(define-class <property-layer> ()
+  (defval
+   #:init-keyword #:default-value
+   #:getter       get-default-value)
+  (height
+   #:init-keyword #:height
+   #:getter       get-height)
+  (width
+   #:init-keyword #:width
+   #:getter       get-width)
+  (prop-table
+   #:init-keyword #:prop-table
+   #:init-form    (make-hash-table)
+   #:getter       get-prop-table))
+
+(define-class <position> ()
+  (x #:init-keyword #:x #:accessor x)
+  (y #:init-keyword #:y #:accessor y))
+
+;;; Public methods
+;; Get the property at the given position
+(define-method (property-at-pos (prop-layer <property-layer>)
+                                (position   <position>))
+  (let* ([pos-x   (x position)]
+         [pos-y   (y position)]
+         [width   (get-width         prop-layer)]
+         [height  (get-height        prop-layer)]
+         [default (get-default-value prop-layer)]
+         [valid-x (bound pos-x 0 width)]
+         [valid-y (bound pos-y 0 height)]
+         [table   (get-prop-table prop-layer)])
+    (cond [(not valid-x) default]
+          [(not valid-y) default]
+          [else          ()])))
+
+;;; Public functions
+;; Returns a function that will get the property at a provided x and y location.
+(define (property-getter prop-layer)
+  (λ [x y] (property-at-pos prop-layer (make-pos x y))))
+
+(define (get-property prop-layer x y)
+  ((property-getter prop-layer) x y))
+
+(define (make-pos x y)
+  (make <position> #:x x #:y y))
+
+;;  (let ([prop-gotten (make-object <color> "white")])
+;;    (get-pixel bitmap-dc (x pos) (y pos) prop-gotten)
+;;    (hash-ref color-value-hash (color-numbers color-gotten) 'unknown)))
+
+;;; Private functions
+;; Utility function used to turn a color object into a list of form '(R G B)
+(define (color-numbers color)
+  (list (send color red) (send color green) (send color blue)))
+
+;; General function that maps f over the keys in a hash
+(define (hash-key-map f h)
+  (for/hash ([(k v) (in-hash h)]) (values (f k) v)))
+
+;; Takes a color name (from the-color-database) and gives its RGB components
+(define (color-value color-name)
+  (define color (make-object <color> color-name))
+  (color-numbers color))
+
+;; Takes the hash-table given at initialization and create a list from it
+(define color-value-hash
+  (hash-key-map (λ (color-name) (color-value color-name)) prop-table))
+
+
 
 (define <property-layer>
   (class <object>
     ;;; Class fields
-    (init-field
+    ('init-field
      bitmap
+     (bitmap-dc (send bitmap make-dc))
      hash-table)
 
-    ;;; Local variables
-    ;; Define bitmap drawing context
-    (define bitmap-dc
-      (send bitmap make-dc))
-
-    ;;; Private functions
-    ;; Returns the hash table's value for a color key at (x, y)
-    (define/private (hash-color x y)
-      (define color-gotten (make-object <color> "white"))
-      (send bitmap-dc get-pixel x y color-gotten)
-      (hash-ref color-value-hash (color-numbers color-gotten) 'unknown))
-
-    ;; Utility function used to turn a color object into a list of form '(R G B)
-    (define/private (color-numbers color)
-      (list (send color red) (send color green) (send color blue)))
-
-    ;; General function that maps f over the keys in a hash
-    (define/private (hash-key-map f h)
-      (for/hash ([(k v) (in-hash h)]) (values (f k) v)))
-
-    ;; Takes a color name (from the-color-database) and gives its RGB components
-    (define/private (color-value color-name)
-      (define color (make-object <color> color-name))
-      (color-numbers color))
-
-    ;; Takes the hash-table given at initialization and create a list from it
-    (define color-value-hash
-      (hash-key-map (λ (color-name) (color-value color-name)) hash-table))
-
-    ;;; Public functions
+    ;;; Methods
     ;; Get property at a given position
     (define/public (property-at-pos x y)
       (hash-color x y))
