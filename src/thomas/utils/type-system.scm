@@ -84,11 +84,11 @@
   (printfln ""))
 
 (define* (process-type input)
-  (let ([is-fat-arrow (λ (x) (or (eq? '⇒ x) (eq? '=> x)))]
-        [split-fat    (delay (break is-fat-arrow input))])
+  (let* ([is-fat-arrow (λ (x) (or (eq? '⇒ x) (eq? '=> x)))]
+         [split-fat    (delay (break is-fat-arrow input))])
     (if (any is-fat-arrow input)
         (let-values ([(constr type) (force split-fat)])
-          (make-constrained-type pfx sfx))
+          (make-constrained-type constr type))
         (make-type input))))
 
 (define-syntax do-nothing (λ (stx) #''()))
@@ -167,6 +167,11 @@
     (printfln "hi")
     '()))
 
+;; FIXME: add a real definition
+(define* (remove-duplicate-modules mod-list)
+  "Remove duplicates from a list of modules."
+  mod-list)
+
 (define* (get-module-deps mod)
   "Determines the recursive dependencies of the given module.
 The given module (@var{mod}) can either be an s-expression:
@@ -175,7 +180,7 @@ Or it can be an instance of @code{<module>}:
 @code{(define example (resolve-module '(ice-9 popen)))}
 @code{(get-module-deps example) ;; => '(... all the recursive dependencies ...)}
 @code{(is-a? example-module <module>) ;; => #t}"
-  (uniquify-modules
+  (remove-duplicate-modules
    (get-recursive-deps
     (if (is-a? given <module>) given (resolve-module given)))))
 
