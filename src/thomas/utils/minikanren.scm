@@ -35,7 +35,7 @@
 ;;
 ;;; Code:
 
-(define-module (thomas minikanren)
+(define-module (thomas utils minikanren)
   #:use-module (rnrs sorting)
   #:use-module (rnrs lists)
   #:export     (run run*
