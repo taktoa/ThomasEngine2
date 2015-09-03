@@ -35,71 +35,71 @@
   #:use-module (thomas utility)
   #:export     (<texture-canvas>))
 
-(define <texture-canvas>
-  (class <canvas>
+(define-class <texture-canvas> (<canvas>)
     ;;; Class fields
-    (inherit
-     get-width
-     get-height
-     refresh)
+    ;(inherit
+    ; get-width
+    ; get-height
+    ; refresh)
 
-    (init-field
-     parent
-     texture
-     width
-     height
-     [event-callback  (λ (c) #f)]
-     [render-callback (λ (w h x y) (void))])
+    ;(init-field
+    ; parent
+    ; texture
+    ; width
+    ; height
+    ; [event-callback  (λ (c) #f)]
+    ; [render-callback (λ (w h x y) (void))])
 
-    (field
-     [position-x 0]
-     [position-y 0])
+    (position-x
+      #:init-value 0)
+    (position-y
+      #:init-value 0))
 
-    ;;; Local variables
-    ;; Get texture width and height
-    (define texture-width  (send texture get-width))
-    (define texture-height (send texture get-height))
+;;; Local variables
+;; Get texture width and height
+(define texture-width  (send texture get-width))
+(define texture-height (send texture get-height))
 
-    ;;; Private functions
-    ;; Draw the texture at a position
-    (define/private (draw-texture x y dc)
-      (send dc draw-bitmap-section texture 0 0 position-x position-y (get-width) (get-height)))
+;;; Private functions
+;; Draw the texture at a position
+(define/private (draw-texture x y dc)
+    (send dc draw-bitmap-section texture 0 0 position-x position-y (get-width) (get-height)))
 
-    ;;; Public functions
-    ;; Utility functions for allowable position bounds
-    (define/public (min-x) 0)
-    (define/public (min-y) 0)
-    (define/public (max-x) (- texture-width width))
-    (define/public (max-y) (- texture-height height))
+;;; Public functions
+;; Utility functions for allowable position bounds
+(define/public (min-x) 0)
+(define/public (min-y) 0)
+(define/public (max-x) (- texture-width width))
+(define/public (max-y) (- texture-height height))
 
-    ;; Set the screen position if it has changed, bracketed by position bounds
-    (define/public (set-position! x y)
-      (define adj-x (bound x (min-x) (max-x)))
-      (define adj-y (bound y (min-y) (max-y)))
-      (unless (and (= position-x adj-x) (= position-y adj-y))
-        (set! position-x adj-x)
-        (set! position-y adj-y)))
+;; Set the screen position if it has changed, bracketed by position bounds
+(define/public (set-position! x y)
+    (define adj-x (bound x (min-x) (max-x)))
+    (define adj-y (bound y (min-y) (max-y)))
+    (unless (and (= position-x adj-x) (= position-y adj-y))
+    (set! position-x adj-x)
+    (set! position-y adj-y)))
 
-    ;;; Superclass overrides
-    ;; Override on-char and on-event with the event callback
-    (define/override (on-char key-event) (event-callback key-event))
-    (define/override (on-event key-event) (event-callback key-event))
+;;; Superclass overrides
+;; Override on-char and on-event with the event callback
+(define/override (on-char key-event) (event-callback key-event))
+(define/override (on-event key-event) (event-callback key-event))
 
-    ;; Override screen-painting function
-    (define/override (on-paint)
-      (let ([dc (send this get-dc)])
-        (send dc suspend-flush)
-        (draw-texture position-x position-y dc)
-        (send dc draw-bitmap
-              (render-callback (get-width) (get-height) position-x position-y) 0 0 'xor)
-        (send dc resume-flush)))
+;; Override screen-painting function
+(define/override (on-paint)
+    (let ([dc (send this get-dc)])
+    (send dc suspend-flush)
+    (draw-texture position-x position-y dc)
+    (send dc draw-bitmap
+            (render-callback (get-width) (get-height) position-x position-y) 0 0 'xor)
+    (send dc resume-flush)))
 
-    ;;; Class initialization
-    ;; Set paint callback, minimum width, and minimum height
-    (super-new
-     [parent parent]
-     [min-width width]
-     [min-height height])
+;;; Class initialization
+;; Set paint callback, minimum width, and minimum height
+;(super-new
+;    [parent parent]
+;    [min-width width]
+;    [min-height height])
 
-    ;; Focus the canvas
-    (send this focus)))
+;; Focus the canvas
+;(send this focus)

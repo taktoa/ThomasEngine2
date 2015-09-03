@@ -1,3 +1,5 @@
 compiled/
 src/compiled/
-
+src/thomas/*.swp
+src/thomas/utils/*.swp
+*.swp
