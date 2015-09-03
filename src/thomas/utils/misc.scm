@@ -29,7 +29,7 @@
 ;;
 ;;; Code:
 
-(define-module (thomas utils)
+(define-module (thomas utils misc)
   #:version    (0 0 1)
   #:duplicates (check)
   #:use-module (scheme documentation) ;; guile-lib: Documentation

@@ -31,7 +31,7 @@
 
 (define-module (thomas utils type-system)
   #:version    (0 0 1)
-  #:use-module (thomas utils)
+  #:use-module (thomas utils misc)
   #:use-module (thomas utils minikanren)
   #:use-module (scheme documentation)
   #:use-module (ice-9  hash-table)
@@ -159,23 +159,22 @@
 
 (define* (interface->module interface)
   (_ "Find the module corresponding to the given @var{interface}.")
-  (module-resolve
+  (resolve-module
    (module-name interface)))
 
 (define* (modules-used-by module)
   (_ "Get all the modules used by the given @var{module}.")
   (map interface->module (module-uses module)))
 
-(define* (get-recursive-deps module)
+(define* (get-recursive-deps ht module)
   (_ "Helper function for `get-module-deps'.")
-  (letrec ([recurse get-recursive-deps]
+  ;;(printfln ";; DEBUG: ~a" (module-name module))
+  (letrec ([add-val (λ (m) (hash-set! ht m '()))]
+           [recurse (λ (m) (get-recursive-deps ht m))]
            [deps    (modules-used-by module)])
-    (append deps (map recurse deps))))
-
-;; FIXME: add a real definition
-(define* (remove-duplicate-modules mod-list)
-  (_ "Remove duplicates from a list of modules.")
-  mod-list)
+    (unless (hash-ref ht module)
+      (for-each add-val deps)
+      (for-each recurse deps))))
 
 (define* (get-module-deps mod)
   (_ "Determines the recursive dependencies of the given module.
@@ -185,19 +184,27 @@ Or it can be an instance of @code{<module>}:
 @code{(define example (resolve-module '(ice-9 popen)))}
 @code{(get-module-deps example) ;; => '(... all the recursive dependencies ...)}
 @code{(is-a? example-module <module>) ;; => #t}")
-  (remove-duplicate-modules
-   (get-recursive-deps
-    (if (is-a? given <module>) given (resolve-module given)))))
+  (let ([hash-table (make-hash-table)])
+    (get-recursive-deps
+     hash-table
+     (cond
+      [(is-a? mod <module>) mod]
+      [(list? mod)          (resolve-module mod)]
+      [else                 (error "Invalid input to get-module-deps")]))
+    hash-table))
+
+(define* (print-module-deps mod)
+  (hash-for-each
+   (λ (k v) (format #t "~a~%" k))
+   (get-module-deps mod)))
 
 (define* (get-current-deps)
   "Same as `get-module-deps', but runs on the current module."
   (get-module-deps (current-module)))
 
-(define* (get-module-deps #:rest args)
-  "."
-  (case args
-    [()      (get-recursive-deps (current-module))]
-    [(given) (get-recursive-deps )]))
+(define* (print-current-deps)
+  "Same as `print-module-deps', but runs on the current module."
+  (print-module-deps (current-module)))
 
 ;; (provide 'type-checker)
 
