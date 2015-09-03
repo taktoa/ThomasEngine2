@@ -111,18 +111,18 @@
 
 
 
-(define <property-layer>
-  (class <object>
+;(define <property-layer>
+;  (class <object>
     ;;; Class fields
-    ('init-field
-     bitmap
-     (bitmap-dc (send bitmap make-dc))
-     hash-table)
+;    ('init-field
+;     bitmap
+;     (bitmap-dc (send bitmap make-dc))
+;     hash-table)
 
     ;;; Methods
     ;; Get property at a given position
-    (define/public (property-at-pos x y)
-      (hash-color x y))
+;    (define/public (property-at-pos x y)
+;      (hash-color x y))
 
     ;;; Class initialization
-    (super-new)))
+;    (super-new)))
