@@ -53,56 +53,57 @@
       [(cons n ent)               (hash-set! entity-hash n ent)]
       [else                       (throw 'apply-update! "entity" update)])))
 
-(define <entity-set>
-  (class <object>
-    ;;; Class fields
-    (field
-     [update-queue (make-q)]
-     [entity-hash  (make-hash-table)])
+(define-class <entity-set> ()
+    (update-queue 
+      #:init-keyword :#queue
+      #:init-form (make-q))
+    (entity-hash  
+      #:init-keyword :#hash
+      #:init-form (make-hash-table)))
 
-    ;;; Methods
-    ;; Queue up an entity addition
-    (define/public (add-entity name)
-      (enq! update-queue (cons name 'add)))
+;;; Methods
+;; Queue up an entity addition
+(define/public (add-entity name)
+  (enq! update-queue (cons name 'add)))
 
-    ;; Queue up an entity removal
-    (define/public (rem-entity name)
-      (enq! update-queue (cons name 'delete)))
+;; Queue up an entity removal
+(define/public (rem-entity name)
+  (enq! update-queue (cons name 'delete)))
 
-    ;; Queue up entity changes (directly setting entity)
-    (define/public (set-entity name ent)
-      (enq! update-queue (cons name ent)))
+;; Queue up entity changes (directly setting entity)
+(define/public (set-entity name ent)
+  (enq! update-queue (cons name ent)))
 
-    ;; Queue up entity changes
-    (define/public (set-entity-properties name props)
-      (enq! update-queue (cons name props)))
+;; Queue up entity changes
+(define/public (set-entity-properties name props)
+  (enq! update-queue (cons name props)))
 
-    ;; Queue up a single entity change
-    (define/public (set-entity-property name key value)
-      (set-entity-properties name (mkhash key value)))
+;; Queue up a single entity change
+(define/public (set-entity-property name key value)
+  (set-entity-properties name (mkhash key value)))
 
-    ;; Get all entities
-    (define/public (get-entities)
-      (update!)
-      (hash-copy entity-hash))
+;; Get all entities
+(define/public (get-entities)
+  (update!)
+  (hash-copy entity-hash))
 
-    ;; Get one entity
-    (define/public (get-entity name)
-      (hash-ref entity-hash name))
+;; Get one entity
+(define/public (get-entity name)
+  (hash-ref entity-hash name))
 
-    ;; Get all properties of an entity
-    (define/public (get-entity-properties name)
-      (send (get-entity name) prop-get-all))
+;; Get all properties of an entity
+(define/public (get-entity-properties name)
+  (send (get-entity name) prop-get-all))
 
-    ;; Get a property of an entity
-    (define/public (get-entity-property name prop)
-      (send (get-entity name) prop-get prop))
+;; Get a property of an entity
+(define/public (get-entity-property name prop)
+  (send (get-entity name) prop-get prop))
 
-    ;; Apply all updates in queue and clear it
-    (define/public (update!)
-      (for ([c (in-queue update-queue)])
-        (apply-update! c))
-      (set! update-queue (make-q)))
+;; Apply all updates in queue and clear it
+(define/public (update!)
+  (for ([c (in-queue update-queue)])
+  (apply-update! c))
+  (set! update-queue (make-q)))
 
-    ;;; Class initialization
-    (super-new)))
+;;; Class initialization
+;    (super-new)))

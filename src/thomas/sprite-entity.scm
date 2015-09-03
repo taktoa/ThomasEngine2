@@ -47,39 +47,29 @@
   (new <sprite-entity>
        [properties props]))
 
-(define <sprite-entity>
-  (class <entity>
-    ;;; Class fields
-    (inherit
-     prop-update
-     modify-props
-     prop-get
-     prop-get-all)
+(define-class <sprite-entity> (<entity>))
 
-    ;;; Private functions
-    ;; Convert degrees to radians
-    (define/private (dtr d) (* d pi 1/180))
+;;; Private functions
+;; Convert degrees to radians
+(define/private (dtr d) (* d pi 1/180))
 
-    (define/private (render-sprite)
-      (let* ([sprite (prop-get 'sprite)]
-             [s (prop-get 'scale)]
-             [r (prop-get 'rotation)]
-             [sw (send sprite get-width)]
-             [sh (send sprite get-height)])
-        (define (gen-blank-bm) (make-bitmap (* 2 s sw) (* 2 s sh) #t))
-        (define sprite-dc (new <bitmap-dc> [bitmap (gen-blank-bm)]))
-        (send sprite-dc set-origin (* s sw) (* s sh))
-        (send sprite-dc set-rotation (dtr r))
-        (send sprite-dc set-scale s s)
-        (send sprite-dc draw-bitmap sprite (* -1/2 sw) (* -1/2 sh))
-        (send sprite-dc set-rotation r)
-        (send sprite-dc get-bitmap)))
+(define/private (render-sprite)
+    (let* ([sprite (prop-get 'sprite)]
+           [s (prop-get 'scale)]
+           [r (prop-get 'rotation)]
+           [sw (send sprite get-width)]
+           [sh (send sprite get-height)])
+    (define (gen-blank-bm) (make-bitmap (* 2 s sw) (* 2 s sh) #t))
+    (define sprite-dc (new <bitmap-dc> [bitmap (gen-blank-bm)]))
+    (send sprite-dc set-origin (* s sw) (* s sh))
+    (send sprite-dc set-rotation (dtr r))
+    (send sprite-dc set-scale s s)
+    (send sprite-dc draw-bitmap sprite (* -1/2 sw) (* -1/2 sh))
+    (send sprite-dc set-rotation r)
+    (send sprite-dc get-bitmap)))
 
-    ;;; Public functions
-    (define/public (render)
-      (list (render-sprite)
-            (prop-get 'position-x)
-            (prop-get 'position-y)))
-
-    ;;; Class initialization
-    (super-new)))
+;;; Public functions
+(define/public (render)
+    (list (render-sprite)
+        (prop-get 'position-x)
+        (prop-get 'position-y)))

@@ -48,7 +48,7 @@
 
 ;;; Methods
 ;; Change a property
-(define/public prop-update
+(define-method prop-update
     (case-lambda
     [(k v)   (prop-update properties k v)]
     [(p k v) (if (eq? v 'delete)
@@ -56,15 +56,15 @@
              (hash-set! p k v))]))
 
 ;; Change multiple properties at once
-(define/public (modify-props changes)
-  (let ([change-list  (hash->list changes)]
-       [compose-list (cut apply compose <>)]
-       [update-item  (λ [c] (cut prop-update <> (car c) (cdr c)))]
-       [update       (compose-list (map update-item change-list))])
-       (new <entity> [properties (update properties)])))
+(define-method (modify-props changes)
+  (let* ([change-list  (hash->list changes)]
+         [compose-list (cut apply compose <>)]
+         [update-item  (λ [c] (cut prop-update <> (car c) (cdr c)))]
+         [update       (compose-list (map update-item change-list))])
+        (make <entity> [properties (update properties)])))
 
 ;; Get a specific property of the entity
-(define/public (prop-get k) (hash-ref properties k))
+(define-method (prop-get k) (hash-ref properties k))
 
 ;; Get all properties of this entity
-(define/public (prop-get-all) (hash-copy properties))
+(define-method (prop-get-all) (hash-copy properties))
