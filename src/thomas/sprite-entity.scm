@@ -51,9 +51,9 @@
 
 ;;; Private functions
 ;; Convert degrees to radians
-(define/private (dtr d) (* d pi 1/180))
+(define (dtr d) (* d pi 1/180))
 
-(define/private (render-sprite)
+(define (render-sprite)
     (let* ([sprite (prop-get 'sprite)]
            [s (prop-get 'scale)]
            [r (prop-get 'rotation)]
@@ -69,7 +69,7 @@
     (send sprite-dc get-bitmap)))
 
 ;;; Public functions
-(define/public (render)
+(define-method (render)
     (list (render-sprite)
         (prop-get 'position-x)
         (prop-get 'position-y)))

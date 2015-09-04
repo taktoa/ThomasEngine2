@@ -40,7 +40,7 @@
 (define-class <sprite-entity-set> (<entity-set>))
 
 ;;; Private functions
-(define/private (get-entities-within-area w h x y)
+(define (get-entities-within-area w h x y)
     (define (posn-within-area px py)
     (and (< (- px x) w) (< (- py y) h)))
     (define (entity-within-area ent)
@@ -53,27 +53,27 @@
     (λ (k v) (if (entity-within-area v) (hash-set! result k v) (void)))) result)
 
 ;;; Public functions
-(define/public (set-entity-position name x y)
+(define-method (set-entity-position name x y)
     (set-entity-properties name (mkhash 'position-x x 'position-y y)))
 
-(define/public (set-entity-rotation name r)
+(define-method (set-entity-rotation name r)
     (set-entity-property name 'rotation r))
 
-(define/public (set-entity-scale name s)
+(define-method (set-entity-scale name s)
     (set-entity-property name 'scale s))
 
-(define/public (get-entity-position name)
+(define-method (get-entity-position name)
     (values
     (get-entity-property name 'position-x)
     (get-entity-property name 'position-y)))
 
-(define/public (get-entity-rotation name)
+(define-method (get-entity-rotation name)
     (get-entity-property name 'rotation))
 
-(define/public (get-entity-scale name)
+(define-method (get-entity-scale name)
     (get-entity-property name 'scale))
 
-(define/public (render width height x y)
+(define-method (render width height x y)
     (update!)
     (define to-draw (get-entities-within-area width height x y))
     (define sprites (hash-map to-draw (λ (k v) (send v render))))

@@ -63,44 +63,44 @@
 
 ;;; Methods
 ;; Queue up an entity addition
-(define/public (add-entity name)
+(define-method (add-entity name)
   (enq! update-queue (cons name 'add)))
 
 ;; Queue up an entity removal
-(define/public (rem-entity name)
+(define-method (rem-entity name)
   (enq! update-queue (cons name 'delete)))
 
 ;; Queue up entity changes (directly setting entity)
-(define/public (set-entity name ent)
+(define-method (set-entity name ent)
   (enq! update-queue (cons name ent)))
 
 ;; Queue up entity changes
-(define/public (set-entity-properties name props)
+(define-method (set-entity-properties name props)
   (enq! update-queue (cons name props)))
 
 ;; Queue up a single entity change
-(define/public (set-entity-property name key value)
+(define-method (set-entity-property name key value)
   (set-entity-properties name (mkhash key value)))
 
 ;; Get all entities
-(define/public (get-entities)
+(define-method (get-entities)
   (update!)
   (hash-copy entity-hash))
 
 ;; Get one entity
-(define/public (get-entity name)
+(define-method (get-entity name)
   (hash-ref entity-hash name))
 
 ;; Get all properties of an entity
-(define/public (get-entity-properties name)
+(define-method (get-entity-properties name)
   (send (get-entity name) prop-get-all))
 
 ;; Get a property of an entity
-(define/public (get-entity-property name prop)
+(define-method (get-entity-property name prop)
   (send (get-entity name) prop-get prop))
 
 ;; Apply all updates in queue and clear it
-(define/public (update!)
+(define-method (update!)
   (for ([c (in-queue update-queue)])
   (apply-update! c))
   (set! update-queue (make-q)))

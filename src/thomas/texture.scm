@@ -62,18 +62,18 @@
 
 ;;; Private functions
 ;; Draw the texture at a position
-(define/private (draw-texture x y dc)
+(define (draw-texture x y dc)
     (send dc draw-bitmap-section texture 0 0 position-x position-y (get-width) (get-height)))
 
 ;;; Public functions
 ;; Utility functions for allowable position bounds
-(define/public (min-x) 0)
-(define/public (min-y) 0)
-(define/public (max-x) (- texture-width width))
-(define/public (max-y) (- texture-height height))
+(define-method (min-x) 0)
+(define-method (min-y) 0)
+(define-method (max-x) (- texture-width width))
+(define-method (max-y) (- texture-height height))
 
 ;; Set the screen position if it has changed, bracketed by position bounds
-(define/public (set-position! x y)
+(define-method (set-position! x y)
     (define adj-x (bound x (min-x) (max-x)))
     (define adj-y (bound y (min-y) (max-y)))
     (unless (and (= position-x adj-x) (= position-y adj-y))
