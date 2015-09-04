@@ -78,10 +78,10 @@
 
 ;;; Public functions
 ;; Returns a function that will get the property at a provided x and y location.
-(define (property-getter prop-layer)
+(define (property-getter (prop-layer <property-layer>))
   (λ [x y] (property-at-pos prop-layer (make-pos x y))))
 
-(define (get-property prop-layer x y)
+(define (get-property (prop-layer <property-layer>) x y)
   ((property-getter prop-layer) x y))
 
 (define (make-pos x y)

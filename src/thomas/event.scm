@@ -32,40 +32,60 @@
 (define-module (thomas event)
   #:version    (0 0 1)
   #:use-module (scheme documentation)
+  #:use-module (oop goops)
+  #:use-module (ice-9 futures)
+  #:use-module (ice-9 match)
   #:export     (<evt-handler>))
 
-(define-class <evt-handler> ()
+(define undefined '())
+(define true #t)
+(define* (void #:rest args) undefined)
+(define* (mutable-set #:rest args) undefined)
+(define get-event-type void)
+(define get-x void)
+(define get-y void)
+(define get-key-code void)
+(define get-key-release-code void)
+(define set-remove! void)
+(define set-add! void)
+(define pressed-keys undefined)
+(define set-member? void)
+
+(define-class <evt-handler> (<class>)
     (pressed-keys 
       #:init-keyword #:keys
       #:init-form (mutable-set)))
 
 ;;; Private functions
 ;; Translate an event to a more usable form
-(define/private (translate-event e)
+(define (translate-event e)
   (cond
    [(is-a? e <mouse-event>) (mouse-translate-event e)]
    [(is-a? e <key-event>) (key-translate-event e)]))
 
+(define-class <mouse-event> (<class>))
+(define-class <key-event> (<class>))
+
 ;; Unwrap mouse event type, x, and y, and pass them to mouse-translate
-(define/private (mouse-translate-event e)
-  (mouse-translate (send e get-event-type) (send e get-x) (send e get-y)))
+(define (mouse-translate-event e)
+  (mouse-translate (get-event-type e) (get-x e) (get-y e)))
 
 ;; Translate mouse event type, x, and y to a list
-(define/private (mouse-translate t x y) (list t x y))
+(define (mouse-translate t x y) (list t x y))
 
 ;; Unwrap the key-codes from the key-event and pass them to key-translate
-(define/private (key-translate-event e)
-  (key-translate (send e get-key-code) (send e get-key-release-code)))
+(define (key-translate-event e)
+  (key-translate (get-key-code e) (get-key-release-code e)))
 
 ;; Translate raw key-events to more useable pairs
-(define/private (key-translate x y)
+(define (key-translate x y)
  (cond
    [(eq? x 'release) (list y 'release)]
    [(eq? y 'press)   (list x 'press)]
    [true             (void)]))
 
 ;; Add or remove a key from the key-set
-(define/private (set-pressed-keys l)
+(define (set-pressed-keys l)
     (match l
            [(list x 'press)   (set-add! pressed-keys x)]
            [(list x 'release) (set-remove! pressed-keys x)]
@@ -73,16 +93,20 @@
 
 ;;; Public functions
 ;; Getter for key capture thread and key state
-(define/public (get-key-thread) key-thread)
-(define/public (get-key-state) pressed-keys)
+(define-method (get-key-thread) key-thread)
+(define-method (get-key-state) pressed-keys)
 
 ;; Utility function for determining whether or not a key is pressed
-(define/public (is-pressed? c) (set-member? pressed-keys c))
+(define-method (is-pressed? c) (set-member? pressed-keys c))
+
+;; TODO finish code
+(define* (thread-receive #:rest args) '())
 
 ;;; Class initialization
 ;; Key capture thread
-(define key-thread
-  (thread (λ ()
-           (let loop ()
-              (set-pressed-keys (translate-event (thread-receive)))
-              (loop)))))
+;(define key-thread
+;  (make-future (let loop ()
+;                 (set-pressed-keys (translate-event (thread-receive)))
+;                 (loop))))
+
+(define key-thread undefined)
