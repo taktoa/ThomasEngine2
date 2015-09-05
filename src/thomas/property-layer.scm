@@ -78,7 +78,7 @@
          [table   (get-prop-table prop-layer)])
     (cond [(not valid-x) default]
           [(not valid-y) default]
-          [else          undefined])))
+          [else          (undefined)])))
 
 ;;; Public functions
 ;; Returns a function that will get the property at a provided x and y location.
@@ -115,13 +115,11 @@
 ;;; Private functions
 ;; Utility function used to turn a color object into a list of form '(R G B)
 (define-method (color-numbers (color <color>))
-  (list (send color red) (send color green) (send color blue)))
-
-(define for/hash undefined)
+  (list (get-red color) (get-green color) (get-blue color)))
 
 ;; General function that maps f over the keys in a hash
-(define (hash-key-map f h)
-  (for/hash ([(k v) (in-hash h)]) (values (f k) v)))
+(define (hash-key-map f h) undefined)
+  ;(for/hash ([(k v) (in-hash h)]) (values (f k) v)))
 
 (define-class <color> (<object>)
               (red
