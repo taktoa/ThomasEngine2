@@ -32,9 +32,11 @@
 (define-module (thomas texture)
   #:version    (0 0 1)
   #:use-module (scheme documentation)
-  #:use-module (thomas utility)
+  #:use-module (oop goops)
+  #:use-module (thomas utils misc)
   #:export     (<texture-canvas>))
 
+(define-class <canvas> (<class>))
 (define-class <texture-canvas> (<canvas>)
     ;;; Class fields
     ;(inherit
@@ -57,42 +59,47 @@
 
 ;;; Local variables
 ;; Get texture width and height
-(define texture-width  (send texture get-width))
-(define texture-height (send texture get-height))
+;; Dependent on <canvas>
+;(define texture-width  (send texture get-width))
+;(define texture-height (send texture get-height))
 
 ;;; Private functions
 ;; Draw the texture at a position
-(define (draw-texture x y dc)
-    (send dc draw-bitmap-section texture 0 0 position-x position-y (get-width) (get-height)))
+;; Probably going to be replaced entirely
+;(define (draw-texture x y dc)
+;    (send dc draw-bitmap-section texture 0 0 position-x position-y (get-width) (get-height)))
 
 ;;; Public functions
 ;; Utility functions for allowable position bounds
 (define-method (min-x) 0)
 (define-method (min-y) 0)
-(define-method (max-x) (- texture-width width))
-(define-method (max-y) (- texture-height height))
+;; Dependent on <canvas> again
+;(define-method (max-x) (- texture-width width))
+;(define-method (max-y) (- texture-height height))
 
 ;; Set the screen position if it has changed, bracketed by position bounds
-(define-method (set-position! x y)
-    (define adj-x (bound x (min-x) (max-x)))
-    (define adj-y (bound y (min-y) (max-y)))
-    (unless (and (= position-x adj-x) (= position-y adj-y))
-    (set! position-x adj-x)
-    (set! position-y adj-y)))
+;; <canvas> dependent, slightly
+;(define-method (set-position! x y)
+;    (define adj-x (bound x (min-x) (max-x)))
+;    (define adj-y (bound y (min-y) (max-y)))
+;    (unless (and (= position-x adj-x) (= position-y adj-y))
+;    (set! position-x adj-x)
+;    (set! position-y adj-y)))
 
 ;;; Superclass overrides
 ;; Override on-char and on-event with the event callback
-(define/override (on-char key-event) (event-callback key-event))
-(define/override (on-event key-event) (event-callback key-event))
+;; define/override probably not needed, but keeping for reference
+;(define/override (on-char key-event) (event-callback key-event))
+;(define/override (on-event key-event) (event-callback key-event))
 
 ;; Override screen-painting function
-(define/override (on-paint)
-    (let ([dc (send this get-dc)])
-    (send dc suspend-flush)
-    (draw-texture position-x position-y dc)
-    (send dc draw-bitmap
-            (render-callback (get-width) (get-height) position-x position-y) 0 0 'xor)
-    (send dc resume-flush)))
+;(define/override (on-paint)
+;    (let ([dc (send this get-dc)])
+;    (send dc suspend-flush)
+;    (draw-texture position-x position-y dc)
+;    (send dc draw-bitmap
+;            (render-callback (get-width) (get-height) position-x position-y) 0 0 'xor)
+;    (send dc resume-flush)))
 
 ;;; Class initialization
 ;; Set paint callback, minimum width, and minimum height
