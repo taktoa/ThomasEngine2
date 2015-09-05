@@ -31,40 +31,43 @@
 
 (define-module (thomas entity)
   #:version    (0 0 1)
+  #:use-module (oop goops)
   #:use-module (scheme documentation)
   #:use-module (srfi   srfi-26)
   #:use-module (ice-9  hash-table)
   #:export     (make-entity
                 <entity>))
 
+(define* (undefined #:rest args) '())
+
 (define (make-entity prop)
   (make <entity> (#:properties prop)))
 
-(define-class <entity> ()
+(define-class <entity> (<class>)
      (properties 
        #:init-keyword #:properties 
-       #init-form (make-hash-table)
+       #:init-form (make-hash-table)
        #:getter get-properties))
 
+(define hash-remove! undefined)
+(define hash-set! undefined)
 ;;; Methods
 ;; Change a property
-(define-method prop-update
-    (case-lambda
-    [(k v)   (prop-update properties k v)]
-    [(p k v) (if (eq? v 'delete)
-             (hash-remove! p k)
-             (hash-set! p k v))]))
+(define-method (prop-update (properties <entity>) k v)
+               (if (eq? v (quote delete)) 
+                 (hash-remove! properties k) 
+                 (hash-set! properties k v)))
 
 ;; Change multiple properties at once
-(define-method (modify-props changes)
-  (let* ([change-list  (hash->list changes)]
-         [compose-list (cut apply compose <>)]
-         [update-item  (λ [c] (cut prop-update <> (car c) (cdr c)))]
-         [update       (compose-list (map update-item change-list))])
-        (make <entity> [properties (update properties)])))
+(define-method (modify-props changes) undefined)
+;  (let* ([change-list  (hash-map->list cons changes)]
+;         [compose-list (cut apply compose <>)]
+;         [update-item  (λ [c] (cut prop-update <> (car c) (cdr c)))]
+;         [update       (compose-list (map update-item change-list))])
+;        (make <entity> #:properties (update properties))))
 
 ;; Get a specific property of the entity
-(define-method (prop-get k) (hash-ref properties k))
+(define-method (prop-get k (entity <entity>)) (hash-ref (get-properties entity) k))
 
 ;; Get all properties of this entity
-(define-method (prop-get-all) (hash-copy properties))
+;(define-method (prop-get-all) (hash-copy properties))
