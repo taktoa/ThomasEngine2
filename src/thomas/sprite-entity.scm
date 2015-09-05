@@ -32,20 +32,22 @@
 (define-module (thomas sprite-entity)
   #:version    (0 0 1)
   #:use-module (scheme documentation)
+  #:use-module (oop goops)
   #:use-module (ice-9  hash-table)
+  #:use-module (thomas utils misc)
   #:use-module (thomas entity)
   #:export     (make-sprite-entity
                 <sprite-entity>))
 
+(define pi 3.14592654)
+
 (define (make-sprite-entity sprite x y r s)
-  (define props
-    (mkhash 'sprite sprite
-            'position-x x
-            'position-y y
-            'rotation r
-            'scale s))
-  (new <sprite-entity>
-       [properties props]))
+  (define props (make-hash 'sprite sprite
+                           'position-x x
+                           'position-y y
+                           'rotation r
+                           'scale s))
+  (make <sprite-entity> #:properties props))
 
 (define-class <sprite-entity> (<entity>))
 
@@ -53,23 +55,25 @@
 ;; Convert degrees to radians
 (define (dtr d) (* d pi 1/180))
 
-(define (render-sprite)
-    (let* ([sprite (prop-get 'sprite)]
-           [s (prop-get 'scale)]
-           [r (prop-get 'rotation)]
-           [sw (send sprite get-width)]
-           [sh (send sprite get-height)])
-    (define (gen-blank-bm) (make-bitmap (* 2 s sw) (* 2 s sh) #t))
-    (define sprite-dc (new <bitmap-dc> [bitmap (gen-blank-bm)]))
-    (send sprite-dc set-origin (* s sw) (* s sh))
-    (send sprite-dc set-rotation (dtr r))
-    (send sprite-dc set-scale s s)
-    (send sprite-dc draw-bitmap sprite (* -1/2 sw) (* -1/2 sh))
-    (send sprite-dc set-rotation r)
-    (send sprite-dc get-bitmap)))
+;; Dependent on guile's equivalent of drawing-contexts
+;(define (render-sprite)
+;    (let* ([sprite (prop-get 'sprite)]
+;           [s (prop-get 'scale)]
+;           [r (prop-get 'rotation)]
+;           [sw (send sprite get-width)]
+;           [sh (send sprite get-height)])
+;    (define (gen-blank-bm) (make-bitmap (* 2 s sw) (* 2 s sh) #t))
+;    (define sprite-dc (new <bitmap-dc> [bitmap (gen-blank-bm)]))
+;    (send sprite-dc set-origin (* s sw) (* s sh))
+;    (send sprite-dc set-rotation (dtr r))
+;    (send sprite-dc set-scale s s)
+;    (send sprite-dc draw-bitmap sprite (* -1/2 sw) (* -1/2 sh))
+;    (send sprite-dc set-rotation r)
+;    (send sprite-dc get-bitmap)))
 
 ;;; Public functions
-(define-method (render)
-    (list (render-sprite)
-        (prop-get 'position-x)
-        (prop-get 'position-y)))
+;; Dependent on guile's render functions
+;(define-method (render)
+;    (list (render-sprite)
+;        (prop-get 'position-x)
+;        (prop-get 'position-y)))

@@ -83,9 +83,11 @@
                 <timer> make-timer
 
                 ;; List functions
+                pairs
                 nil?
                 one?
                 ++
+                make-hash
 
                 ;; String functions
                 ++s
@@ -197,7 +199,17 @@
   (_ "Determines whether a @var{list} is a singleton.")
   (= (length list) 1))
 
+(define (pairs list)
+  (cond [(null? list) '()]
+        [(odd? (length list)) (error 'pairs "odd-length list")]
+        [else (cons (cons (car list) (cadr list))
+                    (pairs (cddr list)))]))
+
 ;;; --------------------------- Hash table functions ---------------------------
+
+(define* (make-hash #:rest args) 
+         (let ([ht (make-hash-table (length args))])
+         (for-each (lambda [p] (hash-set! ht (car p) (cdr p))) (pairs args)) ht))
 
 (define* (ht-keys ht)
   (_ "Get a list of all the keys in the given hash-table.")
