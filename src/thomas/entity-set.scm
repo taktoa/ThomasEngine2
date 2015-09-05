@@ -32,6 +32,7 @@
 (define-module (thomas entity-set)
   #:version    (0 0 1)
   #:use-module (scheme documentation)
+  #:use-module (oop goops)
   #:use-module (ice-9  q)
   #:use-module (ice-9  match)
   #:use-module (ice-9  hash-table)
@@ -53,12 +54,12 @@
       [(cons n ent)               (hash-set! entity-hash n ent)]
       [else                       (throw 'apply-update! "entity" update)])))
 
-(define-class <entity-set> ()
+(define-class <entity-set> (<class>)
     (update-queue 
-      #:init-keyword :#queue
+      #:init-keyword #:queue
       #:init-form (make-q))
     (entity-hash  
-      #:init-keyword :#hash
+      #:init-keyword #:hash
       #:init-form (make-hash-table)))
 
 ;;; Methods
