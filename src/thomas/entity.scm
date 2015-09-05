@@ -36,6 +36,7 @@
   #:use-module (srfi   srfi-26)
   #:use-module (ice-9  hash-table)
   #:export     (make-entity
+                modify-props
                 <entity>))
 
 (define* (undefined #:rest args) '())
@@ -59,12 +60,11 @@
                  (hash-set! properties k v)))
 
 ;; Change multiple properties at once
-(define-method (modify-props changes) undefined)
-;  (let* ([change-list  (hash-map->list cons changes)]
-;         [compose-list (cut apply compose <>)]
-;         [update-item  (λ [c] (cut prop-update <> (car c) (cdr c)))]
-;         [update       (compose-list (map update-item change-list))])
-;        (make <entity> #:properties (update properties))))
+(define-method (modify-props (entity <entity>) changes)
+  (let* ([update-pair (lambda [k v] (lambda [x] (prop-update x k v)))]
+         [change-list  (hash-map->list update-pair changes)]
+         [update       (apply compose change-list)])
+        (make <entity> #:properties (update (get-properties entity)))))
 
 ;; Get a specific property of the entity
 (define-method (prop-get k (entity <entity>)) (hash-ref (get-properties entity) k))

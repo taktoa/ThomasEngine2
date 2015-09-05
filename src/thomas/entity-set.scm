@@ -43,24 +43,29 @@
   (letrec ([old-value (hash-ref hash-table key)]
            [new-value (function old-value)])
     (hash-set! hash-table key new-value)))
+(define* (apply-update! update)
+         (letrec ([mod-prop   (λ  [ph]  (cut modify-props <> ph))]
+                  [set-props! (λ  [eh n ph]  (hash-update! eh n (mod-prop ph)))]
+                  [name       (car update)]
+                  [ent-hash   (get-entity-hash entity)])
+           (match (cdr update)
+                  [(? hash-table? ph)  (set-props!   ent-hash name ph)]
+                  [(? entity? entity)  (hash-set!    ent-hash name ent)]
+                  ['add               (hash-set!    ent-hash name #f)]
+                  ['delete            (hash-remove! ent-hash name)]      
+                  [_                  (throw 'apply-update! "entity" update)])))
 
-(define (apply-update! update)
-  (letrec ([mod-prop   (λ [ent] (modify-props ent modify-props props))]
-           [set-props! (hash-update! entity-hash name mod-prop)])
-    (match update
-      [(cons n 'add)              (hash-set! entity-hash n #f)]
-      [(cons n 'delete)           (hash-remove! entity-hash n)]
-      [(cons n (? hash-table? p)) (set-props! n p)]
-      [(cons n ent)               (hash-set! entity-hash n ent)]
-      [else                       (throw 'apply-update! "entity" update)])))
+(define* (entity? value) (is-a? value <entity>))
 
 (define-class <entity-set> (<class>)
     (update-queue 
-      #:init-keyword #:queue
-      #:init-form (make-q))
+      #:init-keyword #:update-queue
+      #:init-form (make-q)
+      #:getter get-update-queue)
     (entity-hash  
-      #:init-keyword #:hash
-      #:init-form (make-hash-table)))
+      #:init-keyword #:entity-hash
+      #:init-form (make-hash-table)
+      #:getter get-entity-hash))
 
 ;;; Methods
 ;; Queue up an entity addition
