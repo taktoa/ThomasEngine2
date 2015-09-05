@@ -29,19 +29,23 @@
 ;;
 ;;; Code:
 
+
 (define-module (thomas property-layer)
   #:version    (0 0 1)
   #:use-module (scheme documentation)
   #:use-module (ice-9  hash-table)
-  #:use-module (thomas utility)
+  #:use-module (oop goops)
+  #:use-module (thomas utils misc)
   #:export     (<property-layer>
                 property-at-pos))
 
-;;; Classes
-(define-class <hash-map> ()
-  (ht #:init-value))
+(define* (undefined #:rest args) '())
 
-(define-class <property-layer> ()
+;;; Classes
+(define-class <hash-map> (<class>)
+  (ht #:init-value (undefined)))
+
+(define-class <property-layer> (<class>)
   (defval
    #:init-keyword #:default-value
    #:getter       get-default-value)
@@ -56,7 +60,7 @@
    #:init-form    (make-hash-table)
    #:getter       get-prop-table))
 
-(define-class <position> ()
+(define-class <position> (<class>)
   (x #:init-keyword #:x #:accessor x)
   (y #:init-keyword #:y #:accessor y))
 
@@ -74,14 +78,14 @@
          [table   (get-prop-table prop-layer)])
     (cond [(not valid-x) default]
           [(not valid-y) default]
-          [else          ()])))
+          [else          undefined])))
 
 ;;; Public functions
 ;; Returns a function that will get the property at a provided x and y location.
-(define (property-getter (prop-layer <property-layer>))
+(define-method (property-getter (prop-layer <property-layer>))
   (λ [x y] (property-at-pos prop-layer (make-pos x y))))
 
-(define (get-property (prop-layer <property-layer>) x y)
+(define-method (get-property (prop-layer <property-layer>) x y)
   ((property-getter prop-layer) x y))
 
 (define (make-pos x y)
@@ -91,23 +95,56 @@
 ;;    (get-pixel bitmap-dc (x pos) (y pos) prop-gotten)
 ;;    (hash-ref color-value-hash (color-numbers color-gotten) 'unknown)))
 
+(define-class <color> (<object>)
+              (red
+                #:init-keyword #:red
+                #:init-value 0
+                #:getter get-red)
+              (blue
+                #:init-keyword #:blue
+                #:init-value 0
+                #:getter get-blue)
+              (green
+                #:init-keyword #:green
+                #:init-value 0
+                #:getter get-green)
+              (name
+                #:init-keyword #:name
+                #:init-value "white"))
+
 ;;; Private functions
 ;; Utility function used to turn a color object into a list of form '(R G B)
-(define (color-numbers color)
+(define-method (color-numbers (color <color>))
   (list (send color red) (send color green) (send color blue)))
+
+(define for/hash undefined)
 
 ;; General function that maps f over the keys in a hash
 (define (hash-key-map f h)
   (for/hash ([(k v) (in-hash h)]) (values (f k) v)))
 
+(define-class <color> (<object>)
+              (red
+                #:init-keyword #:red
+                #:init-value 0)
+              (blue
+                #:init-keyword #:blue
+                #:init-value 0)
+              (green
+                #:init-keyword #:green
+                #:init-value 0)
+              (name
+                #:init-keyword #:name
+                #:init-value "white"))
+
 ;; Takes a color name (from the-color-database) and gives its RGB components
 (define (color-value color-name)
-  (define color (make-object <color> color-name))
+  (define color (make <color> #:name color-name))
   (color-numbers color))
 
-;; Takes the hash-table given at initialization and create a list from it
-(define color-value-hash
-  (hash-key-map (λ (color-name) (color-value color-name)) prop-table))
+;; Takes the hash-table given at initialization and creates a list from it
+(define-method (color-value-hash (prop-layer <property-layer>))
+  (hash-key-map (λ (color-name) (color-value color-name)) (get-prop-table prop-layer)))
 
 
 

@@ -35,6 +35,7 @@
   #:use-module (oop goops)
   #:use-module (ice-9 futures)
   #:use-module (ice-9 match)
+  #:use-module (thomas utils misc)
   #:export     (<evt-handler>))
 
 (define undefined '())

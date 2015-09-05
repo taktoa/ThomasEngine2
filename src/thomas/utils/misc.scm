@@ -11,7 +11,7 @@
 ;; (at your option) any later version.
 ;;
 ;; ThomasEngine2 is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; but WITHOUT any WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 ;;
@@ -108,6 +108,7 @@
 
                 ;; Misc functions
                 install-locale
+                bound
                 hz-to-ms
                 ms-to-hz))
 
@@ -182,13 +183,15 @@
 
 ;;; ----------------------------- List functions -----------------------------
 
+(define any (@ (srfi srfi-1) any))
+
 (define* (++ #:rest lists)
   (_ "Same as `append', but shorter.")
   (apply append lists))
 
 (define* (nil? #:rest values)
   (_ "Are the given @var{values} equivalent to @code{#nil}?")
-  (any (λ [x] (and (null? x) (eqv? x #nil)))))
+  (any (λ [x] (and (null? x) (eqv? x #nil))) values))
 
 (define* (one? list)
   (_ "Determines whether a @var{list} is a singleton.")
