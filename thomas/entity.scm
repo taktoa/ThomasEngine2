@@ -35,9 +35,12 @@
   #:use-module (scheme documentation)
   #:use-module (srfi   srfi-26)
   #:use-module (ice-9  hash-table)
+  #:use-module (thomas utils misc)
   #:export     (make-entity
                 modify-props
-                <entity>))
+                <entity>
+                prop-get-all
+                prop-get))
 
 (define* (undefined #:rest args) '())
 
@@ -48,7 +51,7 @@
      (properties 
        #:init-keyword #:properties 
        #:init-form (make-hash-table)
-       #:getter get-properties))
+       #:getter prop-get-all))
 
 (define hash-remove! undefined)
 (define hash-set! undefined)
@@ -70,4 +73,4 @@
 (define-method (prop-get k (entity <entity>)) (hash-ref (get-properties entity) k))
 
 ;; Get all properties of this entity
-;(define-method (prop-get-all) (hash-copy properties))
+;(define-method (prop-get-all (entity <entity>)) (hash-copy properties))

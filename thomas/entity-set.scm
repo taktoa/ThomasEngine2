@@ -38,16 +38,19 @@
   #:use-module (ice-9  hash-table)
   #:use-module (srfi srfi-26)
   #:use-module (thomas entity)
+  #:use-module (thomas utils misc)
   #:export     (<entity-set>))
 
 (define (hash-update! hash-table key function)
   (letrec ([old-value (hash-ref hash-table key)]
            [new-value (function old-value)])
     (hash-set! hash-table key new-value)))
-(define-method (apply-update update (entity <entity>))
+
+(define-method (apply-update update)
          (letrec ([mod-prop   (λ  [ph]  (cut modify-props <> ph))]
                   [set-props! (λ  [eh n ph]  (hash-update! eh n (mod-prop ph)))]
                   [name       (car update)]
+                  [entity     (lambda [entity <entity>] entity)]
                   [ent-hash   (get-entity-hash entity)])
            (match (cdr update)
                   [(? hash-table? ph)  (set-props!   ent-hash name ph)]
@@ -79,28 +82,28 @@
 
 ;; Queue up entity changes (directly setting entity)
 (define-method (set-entity name ent (entity-set <entity-set>))
-  (enq! update-queue (cons name ent)))
+  (enq! (get-update-queue entity-set) (cons name ent)))
 
 ;; Queue up entity changes
-(define-method (set-entity-properties name props)
-  (enq! update-queue (cons name props)))
+(define-method (set-entity-properties name props (entity-set <entity-set>))
+  (enq! (get-update-queue entity-set) (cons name props)))
 
 ;; Queue up a single entity change
 (define-method (set-entity-property name key value)
-  (set-entity-properties name (mkhash key value)))
+  (set-entity-properties name (make-hash key value)))
 
 ;; Get all entities
-(define-method (get-entities)
+(define-method (get-entities (entities <entity-set>))
   (update!)
-  (hash-copy entity-hash))
+  (hash-copy (get-entity-hash entities)))
 
 ;; Get one entity
-(define-method (get-entity name)
-  (hash-ref entity-hash name))
+(define-method (get-entity name (entity-set <entity-set>))
+  (hash-ref (get-entity-hash entity-set) name))
 
 ;; Get all properties of an entity
-(define-method (get-entity-properties name)
-  (send (get-entity name) prop-get-all))
+(define-method (get-entity-properties name (entity-set <entity-set>))
+  (prop-get-all (get-entity name entity-set)))
 
 ;; Get a property of an entity
 (define-method (get-entity-property name prop)
@@ -111,6 +114,3 @@
   (for ([c (in-queue update-queue)])
   (apply-update! c))
   (set! update-queue (make-q)))
-
-;;; Class initialization
-;    (super-new)))

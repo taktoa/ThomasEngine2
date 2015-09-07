@@ -88,6 +88,7 @@
                 one?
                 ++
                 make-hash
+                hash-copy
 
                 ;; String functions
                 ++s
@@ -199,15 +200,26 @@
   (_ "Determines whether a @var{list} is a singleton.")
   (= (length list) 1))
 
-(define (pairs list)
+(define* (pairs list)
+  (_ "Converts a @var{list} with an even number of elements into a @var{list}
+     of pairs, also known as an association @var{list.}")
   (cond [(null? list) '()]
         [(odd? (length list)) (error 'pairs "odd-length list")]
         [else (cons (cons (car list) (cadr list))
                     (pairs (cddr list)))]))
 
+(define* (alist->plist xs) 
+         (_ "Converts an association list (alist) into a proper list (plist).")
+         (case xs
+           ('() '())
+           (else (++ (list (caar xs) (cadar xs)) (alist->plist (cdr xs))))))
+
+
 ;;; --------------------------- Hash table functions ---------------------------
 
 (define* (make-hash #:rest args) 
+         (_ "Converts a call on an even number of args into a hash-table with 
+            the args as key-value pairs.")
          (let ([ht (make-hash-table (length args))])
          (for-each (lambda [p] (hash-set! ht (car p) (cdr p))) (pairs args)) ht))
 
@@ -221,7 +233,13 @@
 
 (define* (ht-pairs ht)
   (_ "Convert a hash-table (@var{ht}) to a list of pairs of keys and values.")
+  ; This could be written as (hash-map->list list ht) or even as 
+  ; (hash-map->list cons ht)
   (hash-map->list (lambda (x y) (cons x y)) ht))
+
+(define* (hash-copy ht)  
+  (_ "Creates a deep-copy of a hash-table.")
+  (make-hash (alist->plist (ht-pairs ht))))
 
 ;;; ----------------------------- String functions -----------------------------
 
