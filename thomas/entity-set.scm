@@ -36,6 +36,7 @@
   #:use-module (ice-9  q)
   #:use-module (ice-9  match)
   #:use-module (ice-9  hash-table)
+  #:use-module (srfi srfi-26)
   #:use-module (thomas entity)
   #:export     (<entity-set>))
 
@@ -43,14 +44,14 @@
   (letrec ([old-value (hash-ref hash-table key)]
            [new-value (function old-value)])
     (hash-set! hash-table key new-value)))
-(define* (apply-update! update)
+(define-method (apply-update update (entity <entity>))
          (letrec ([mod-prop   (λ  [ph]  (cut modify-props <> ph))]
                   [set-props! (λ  [eh n ph]  (hash-update! eh n (mod-prop ph)))]
                   [name       (car update)]
                   [ent-hash   (get-entity-hash entity)])
            (match (cdr update)
                   [(? hash-table? ph)  (set-props!   ent-hash name ph)]
-                  [(? entity? entity)  (hash-set!    ent-hash name ent)]
+                  [(? entity? entity)  (hash-set!    ent-hash name entity)]
                   ['add               (hash-set!    ent-hash name #f)]
                   ['delete            (hash-remove! ent-hash name)]      
                   [_                  (throw 'apply-update! "entity" update)])))
@@ -69,15 +70,15 @@
 
 ;;; Methods
 ;; Queue up an entity addition
-(define-method (add-entity name)
-  (enq! update-queue (cons name 'add)))
+(define-method (add-entity name (entity-set <entity-set>))
+  (enq! (get-update-queue entity-set) (cons name 'add)))
 
 ;; Queue up an entity removal
-(define-method (rem-entity name)
-  (enq! update-queue (cons name 'delete)))
+(define-method (rem-entity name (entity-set <entity-set>))
+  (enq! (get-update-queue entity-set) (cons name 'delete)))
 
 ;; Queue up entity changes (directly setting entity)
-(define-method (set-entity name ent)
+(define-method (set-entity name ent (entity-set <entity-set>))
   (enq! update-queue (cons name ent)))
 
 ;; Queue up entity changes
