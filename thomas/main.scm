@@ -96,21 +96,20 @@
 
 (define main-entity-set (new <sprite-entity-set>))
 
-(send main-entity-set add-entity 'a)
-(send main-entity-set set-entity 'a main-character-entity)
-(send main-entity-set update!)
+(add-entity main-entity-set 'a main-character-entity)
+(update! main-entity-set)
 
 (define (test-renderer w h x y)
-  (send main-entity-set render w h x y))
+  (render main-entity-set w h x y))
 
 (define (dmv dx dy canvas)
   (define (is-colliding x y)
-    (equal? (send property-layer property-at-pos x y)
+    (equal? (property-at-pos property-layer x y)
             'collision))
-  (let-values ([(cx cy) (send main-entity-set get-entity-position 'a)])
+  (let-values ([(cx cy) (get-entity-position main-entity-set 'a)])
     (define cdx (if (is-colliding (+ dx cx) cy) 0 dx))
     (define cdy (if (is-colliding cx (+ dy cy)) 0 dy))
-    (send main-entity-set set-entity-position 'a (+ cx cdx) (+ cy cdy))))
+    (set-entity-position main-entity-set 'a (+ cx cdx) (+ cy cdy))))
 
 ;;; ----------------------- Instantiate relevant objects -----------------------
 
@@ -124,7 +123,7 @@
 
 ;; Define a new event handler
 (define event-handler (make-object <evt-handler>))
-(define event-handler-thread (send event-handler get-key-thread))
+(define event-handler-thread (get-key-thread event-handler))
 
 ;; Define a new canvas
 (define main-ac
@@ -146,24 +145,24 @@
 
 ;; Screen refresh callback
 (define (screen-refresh-callback)
-  (define w (send main-ac get-width))
-  (define h (send main-ac get-height))
-  (let-values ([(x y) (send main-entity-set get-entity-position 'a)])
-    (send main-ac set-position! (- x (/ w 2)) (- y (/ h 2))))
-  (send main-frame refresh))
+  (define w (get-width main-ac))
+  (define h (get-height main-ac))
+  (let-values ([(x y) (get-entity-position main-entity-set 'a)])
+    (set-position! main-ac (- x (/ w 2)) (- y (/ h 2))))
+  (refresh main-frame))
 
 ;; Miscellaneous key callback
 (define (misc-key-callback)
-  (define (when-pressed? c a) (when (send event-handler is-pressed? c) (a)))
+  (define (when-pressed? c a) (when (is-pressed? event-handler c) (a)))
   (hash-for-each misc-key-hash (λ (k v) (when-pressed? k v))))
 
 ;; Check if the requisite keys are being pressed
 (define (move-key-checker)
-  (define (pressed? c) (send event-handler is-pressed? c))
-  (values (pressed? up-key)
-          (pressed? down-key)
-          (pressed? left-key)
-          (pressed? right-key)))
+  (let ([pressed? (λ [c] (is-pressed? event-handler c))])
+    (values (pressed? up-key)
+            (pressed? down-key)
+            (pressed? left-key)
+            (pressed? right-key))))
 
 ;; Movement update callback
 (define (move-callback)
@@ -188,4 +187,4 @@
 ;;; ------------------------------ Initialization ------------------------------
 
 ;; Show the canvas
-(send main-frame show #t)
+(show main-frame #t)
