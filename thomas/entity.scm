@@ -31,33 +31,36 @@
 
 (define-module (thomas entity)
   #:version    (0 0 1)
-  #:use-module (oop goops)
-  #:use-module (scheme documentation)
   #:use-module (srfi   srfi-26)
   #:use-module (ice-9  hash-table)
-  #:export     (make-entity
+  #:use-module (oop    goops)
+  #:export     (entity?
+                make-entity
                 modify-props
                 <entity>))
 
+(define* (entity? value)
+  "Return true when the given value is an entity. Otherwise, return false."
+  (is-a? value <entity>))
+
 (define* (undefined #:rest args) '())
 
-(define (make-entity prop)
+(define* (make-entity #:optional properties)
+  "Make an entity with the given initial properties"
   (make <entity> (#:properties prop)))
 
 (define-class <entity> (<class>)
-     (properties 
-       #:init-keyword #:properties 
-       #:init-form (make-hash-table)
-       #:getter get-properties))
+;;  "docstring"
+  (properties #:init-keyword #:properties
+              #:init-form    (make-hash-table)
+              #:getter       get-properties))
 
-(define hash-remove! undefined)
-(define hash-set! undefined)
 ;;; Methods
-;; Change a property
-(define-method (prop-update (properties <entity>) k v)
-               (if (eq? v (quote delete)) 
-                 (hash-remove! properties k) 
-                 (hash-set! properties k v)))
+(define-method (prop-update (entity <entity>) k v)
+  "Change a property."
+  (match v
+    ['delete (hash-remove! (get-properties entity) k)]
+    [_       (hash-set!    (get-properties entity) k v)]))
 
 ;; Change multiple properties at once
 (define-method (modify-props (entity <entity>) changes)
@@ -67,7 +70,8 @@
         (make <entity> #:properties (update (get-properties entity)))))
 
 ;; Get a specific property of the entity
-(define-method (prop-get k (entity <entity>)) (hash-ref (get-properties entity) k))
+(define-method (prop-get (entity <entity>) k)
+  (hash-ref (get-properties entity) k))
 
 ;; Get all properties of this entity
-;(define-method (prop-get-all) (hash-copy properties))
+;;(define-method (prop-get-all) (hash-copy properties))
