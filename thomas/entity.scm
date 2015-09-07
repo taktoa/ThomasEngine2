@@ -34,10 +34,13 @@
   #:use-module (srfi   srfi-26)
   #:use-module (ice-9  hash-table)
   #:use-module (oop    goops)
+  #:use-module (thomas utils misc)
   #:export     (entity?
                 make-entity
                 modify-props
-                <entity>))
+                <entity>
+                prop-get-all
+                prop-get))
 
 (define* (entity? value)
   "Return true when the given value is an entity. Otherwise, return false."
@@ -53,7 +56,7 @@
 ;;  "docstring"
   (properties #:init-keyword #:properties
               #:init-form    (make-hash-table)
-              #:getter       get-properties))
+              #:getter       prop-get-all))
 
 ;;; Methods
 (define-method (prop-update (entity <entity>) k v)
@@ -74,4 +77,4 @@
   (hash-ref (get-properties entity) k))
 
 ;; Get all properties of this entity
-;;(define-method (prop-get-all) (hash-copy properties))
+;(define-method (prop-get-all (entity <entity>)) (hash-copy properties))

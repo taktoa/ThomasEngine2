@@ -36,7 +36,9 @@
   #:use-module (ice-9  q)
   #:use-module (ice-9  match)
   #:use-module (ice-9  hash-table)
-  #:use-module (srfi   srfi-26)
+  #:use-module (srfi srfi-26)
+  #:use-module (thomas entity)
+  #:use-module (thomas utils misc)
   #:export     (<entity-set>))
 
 (define* (hash-update! hash-table key function)
@@ -45,18 +47,19 @@
            [new-value (function old-value)])
     (hash-set! hash-table key new-value)))
 
-(define-method (apply-update update (entity <entity>))
+(define-method (apply-update update)
   "docstring"
-  (letrec ([mod-prop   (λ  [ph]      (cut modify-props <> ph))]
-           [set-props! (λ  [eh n ph] (hash-update! eh n (mod-prop ph)))]
+  (letrec ([mod-prop   (λ [ph]      (cut modify-props <> ph))]
+           [set-props! (λ [eh n ph] (hash-update! eh n (mod-prop ph)))]
            [name       (car update)]
+           [entity     (λ [entity <entity>] entity)]
            [ent-hash   (get-entity-hash entity)])
     (match (cdr update)
-      [(? hash-table? ph) (set-props!   ent-hash name ph)]
-      [(? entity? entity) (hash-set!    ent-hash name entity)]
-      ['add               (hash-set!    ent-hash name #f)]
-      ['delete            (hash-remove! ent-hash name)]
-      [_                  (throw 'apply-update! "entity" update)])))
+      [(? hash-table? ph)  (set-props!   ent-hash name ph)]
+      [(? entity? entity)  (hash-set!    ent-hash name entity)]
+      ['add                (hash-set!    ent-hash name #f)]
+      ['delete             (hash-remove! ent-hash name)]
+      [_                   (throw 'apply-update! "entity" update)])))
 
 (define* (entity-set? value)
   "Return true when the given value is an entity set. Otherwise, return false."
@@ -81,50 +84,47 @@
   (enq! (get-update-queue entity-set)
         (cons name 'delete)))
 
-(define-method (set-entity (entity-set <entity-set>) name (ent <entity>))
+(define-method (set-entity name ent (entity-set <entity-set>))
   "Set the value of the entity with the given @var{name}."
-  (enq! (get-update-queue entity-set)
-        (cons name ent)))
+  (enq! (get-update-queue entity-set) (cons name ent)))
 
-(define-method (set-entity-properties (entity-set <entity-set>) name props)
+(define-method (set-entity-properties name props (entity-set <entity-set>))
   "Queue up changes to the entity with the given @var{name}."
-  (enq! update-queue (cons name props)))
+  (enq! (get-update-queue entity-set) (cons name props)))
 
-(define-method (set-entity-property (entity-set <entity-set>) name key value)
+(define-method (set-entity-property name key value)
   "Queue up a single change to the entity with the given @var{name}."
-  (set-entity-properties name (mkhash key value)))
+  (set-entity-properties name (make-hash key value)))
 
-(define-method (get-entities (entity-set <entity-set>))
+(define-method (get-entities (entities <entity-set>))
   "Get all entities."
   (update!)
-  (hash-copy entity-hash))
+  (hash-copy (get-entity-hash entities)))
 
-(define-method (get-entity (entity-set <entity-set>) name)
+(define-method (get-entity name (entity-set <entity-set>))
   "Get the entity with the given @var{name}."
-  (hash-ref entity-hash name))
+  (hash-ref (get-entity-hash entity-set) name))
 
-(define-method (get-entity-properties (entity-set <entity-set>) name)
+(define-method (get-entity-properties name (entity-set <entity-set>))
   "Get all properties of an entity."
-  (prop-get-all (get-entity name)))
+  (prop-get-all (get-entity name entity-set)))
 
 (define-method (get-entity-property (entity-set <entity-set>) name prop)
   "Get a property of an entity."
   (prop-get prop (get-entity name)))
 
-(define-method (clear-update-queue ())
+(define-method (clear-update-queue (entity-set <entity-set>))
   "Clear the update queue"
   (set! update-queue (make-q)))
 
 (define (in-queue queue)
-  "Return a list corresponding to the contents of the given queue.")
+  "Return a list corresponding to the contents of the given queue."
+  '())
 
-;; Apply all updates in queue and clear it
-(in-queue update-queue)
 (define-method (update!)
-  (for loop ([xs (in-queue update-queue)])
-       (apply-update! c)
-       (loop (cdr xs)))
+  "Apply all updates in queue and clear it."
+  (let loop ([xs (in-queue update-queue)])
+       (when (not-null? xs)
+         (apply-update! c)
+         (loop (cdr xs))))
   (clear-update-queue))
-
-;;; Class initialization
-;    (super-new)))
