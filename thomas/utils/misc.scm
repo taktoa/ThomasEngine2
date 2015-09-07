@@ -207,21 +207,24 @@
 
 ;;; --------------------------- Hash table functions ---------------------------
 
-(define* (make-hash #:rest args) 
-         (let ([ht (make-hash-table (length args))])
-         (for-each (lambda [p] (hash-set! ht (car p) (cdr p))) (pairs args)) ht))
+(define* (make-hash #:rest args)
+  (_ "docstring")
+  (let ([ht (make-hash-table (length args))])
+    (for-each (λ [p] (hash-set! ht (car p) (cdr p)))
+              (pairs args))
+    ht))
 
 (define* (ht-keys ht)
   (_ "Get a list of all the keys in the given hash-table.")
-  (hash-map->list (lambda (x y) x) ht))
+  (hash-map->list (λ (x y) x) ht))
 
 (define* (ht-vals ht)
   (_ "Get a list of all the values in the given hash-table.")
-  (hash-map->list (lambda (x y) y) ht))
+  (hash-map->list (λ (x y) y) ht))
 
 (define* (ht-pairs ht)
   (_ "Convert a hash-table (@var{ht}) to a list of pairs of keys and values.")
-  (hash-map->list (lambda (x y) (cons x y)) ht))
+  (hash-map->list (λ (x y) (cons x y)) ht))
 
 ;;; ----------------------------- String functions -----------------------------
 
