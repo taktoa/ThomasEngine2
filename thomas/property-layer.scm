@@ -1,3 +1,4 @@
+;;; -*- mode: scheme; geiser-scheme-implementation: guile; coding: utf-8 -*-
 ;;; File: property-layer.scm
 ;;
 ;;; License:

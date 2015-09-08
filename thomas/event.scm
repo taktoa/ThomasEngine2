@@ -1,3 +1,4 @@
+;;; -*- mode: scheme; geiser-scheme-implementation: guile; coding: utf-8 -*-
 ;;; File: event.scm
 ;;
 ;;; License:
@@ -53,7 +54,7 @@
 (define set-member? void)
 
 (define-class <evt-handler> (<class>)
-    (pressed-keys 
+    (pressed-keys
       #:init-keyword #:keys
       #:init-form (mutable-set)))
 
