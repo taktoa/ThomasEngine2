@@ -69,7 +69,8 @@
 (define-class <entity-set> (<class>)
   (update-queue #:init-keyword #:update-queue
                 #:init-form    (make-q)
-                #:getter       get-update-queue)
+                #:getter       get-update-queue
+                #:setter       set-update-queue)
   (entity-hash  #:init-keyword #:entity-hash
                 #:init-form    (make-hash-table)
                 #:getter       get-entity-hash))
@@ -116,16 +117,16 @@
 
 (define-method (clear-update-queue (entity-set <entity-set>))
   "Clear the update queue"
-  (set! update-queue (make-q)))
+  (set-update-queue entity-set (make-q)))
 
 (define (in-queue queue)
   "Return a list corresponding to the contents of the given queue."
   '())
 
-(define-method (update!)
+(define-method (update! (entity-set <entity-set>))
   "Apply all updates in queue and clear it."
-  (let loop ([xs (in-queue update-queue)])
-       (when (not-null? xs)
-         (apply-update! c)
+  (let loop ([xs (in-queue (get-update-queue entity-set))])
+       (unless (null? xs)
+         (apply-update (car xs))
          (loop (cdr xs))))
   (clear-update-queue))
