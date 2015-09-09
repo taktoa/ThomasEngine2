@@ -40,7 +40,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (thomas entity)
   #:use-module (thomas utils misc)
-  #:export     (<entity-set>))
+  #:export     (<entity-set>
+                 get-entities))
 
 (define* (hash-update! hash-table key function)
   "docstring"

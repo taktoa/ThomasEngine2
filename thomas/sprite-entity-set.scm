@@ -29,12 +29,16 @@
 ;; Provides a notion of sprite entity sets
 ;;
 ;;; Code:
+(define* (undefined #:rest args) '())
+(define* void undefined)
 
 (define-module (thomas sprite-entity-set)
   #:version    (0 0 1)
   #:use-module (scheme documentation)
   #:use-module (oop goops)
   #:use-module (ice-9  hash-table)
+  #:use-module (thomas utils misc)
+  #:use-module (thomas entity)
   #:use-module (thomas entity-set)
   #:use-module (thomas sprite-entity)
   #:export     (<sprite-entity-set>))
@@ -42,21 +46,21 @@
 (define-class <sprite-entity-set> (<entity-set>))
 
 ;;; Private functions
-(define (get-entities-within-area w h x y)
+(define (get-entities-within-area w h x y) (begin
     (define (posn-within-area px py)
     (and (< (- px x) w) (< (- py y) h)))
     (define (entity-within-area ent)
         (posn-within-area
-        (send ent prop-get 'position-x)
-        (send ent prop-get 'position-y)))
+        (prop-get ent 'position-x)
+        (prop-get ent 'position-y)))
     (define result (make-hash))
     (hash-for-each
     (get-entities)
-    (λ (k v) (if (entity-within-area v) (hash-set! result k v) (void)))) result)
+    (λ (k v) (if (entity-within-area v) (hash-set! result k v) (void)))) result))
 
 ;;; Public functions
 (define-method (set-entity-position name x y)
-    (set-entity-properties name (mkhash 'position-x x 'position-y y)))
+    (set-entity-properties name (make-hash 'position-x x 'position-y y)))
 
 (define-method (set-entity-rotation name r)
     (set-entity-property name 'rotation r))
@@ -75,15 +79,16 @@
 (define-method (get-entity-scale name)
     (get-entity-property name 'scale))
 
-(define-method (render width height x y)
-    (update!)
-    (define to-draw (get-entities-within-area width height x y))
-    (define sprites (hash-map to-draw (λ (k v) (send v render))))
-    (define dc (new <bitmap-dc> [bitmap (make-bitmap width height #t)]))
-    (for-each
-    (match-lambda
-        [(list rr px py) (send dc draw-bitmap rr
-                            (- (- px (* 1/2 (send rr get-width)))  x)
-                            (- (- py (* 1/2 (send rr get-height))) y) 'xor)])
-    sprites)
-    (send dc get-bitmap))
+;; dependent on drawing-context replacements
+;(define-method (render width height x y) 
+;    (update!)
+;    (define to-draw (get-entities-within-area width height x y))
+;    (define sprites (hash-map to-draw (λ (k v) (send v render))))
+;    (define dc (new <bitmap-dc> [bitmap (make-bitmap width height #t)]))
+;    (for-each
+;    (match-lambda
+;        [(list rr px py) (send dc draw-bitmap rr
+;                            (- (- px (* 1/2 (send rr get-width)))  x)
+;                            (- (- py (* 1/2 (send rr get-height))) y) 'xor)])
+;    sprites)
+;    (send dc get-bitmap))
